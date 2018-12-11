@@ -36,6 +36,11 @@ class Notification extends Document
     {
         $obj = parent::factory($template);
 
+        // If $template is a notification file, don't change data
+        if (is_readable($template)) {
+            return $obj;
+        }
+
         // Remove optional nodes
         if (isset($obj->Descrizione)) {
             unset($obj->Descrizione);

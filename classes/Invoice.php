@@ -61,7 +61,7 @@ class Invoice extends Document
     {
         $obj = parent::factory($template);
 
-        // If $template is a file (i.e. an invoice), don't change data
+        // If $template is an invoice file, don't change data
         if (is_readable($template)) {
             return $obj;
         }
