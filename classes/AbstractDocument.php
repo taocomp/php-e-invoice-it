@@ -72,7 +72,12 @@ abstract class AbstractDocument extends \SimpleXMLElement
             throw new \Exception("$class '$dest' already exists");
         }
 
-        if (false === file_put_contents($dest, $this->asXml(), LOCK_EX)) {
+        $xml = $this->asXml();
+
+        // Remove empty lines, if any
+        $xml = preg_replace("/(\R){2,}/", "$1", $xml);
+        
+        if (false === file_put_contents($dest, $xml, LOCK_EX)) {
             throw new \Exception("Cannot save $class to '$dest'");
         }
 
