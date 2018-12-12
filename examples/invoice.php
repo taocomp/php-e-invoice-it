@@ -90,7 +90,7 @@ try
     //     'endpoint' => 'https://testservizi.fatturapa.it/ricevi_notifica',
     //     'wsdl'     => CLIENT_DIR . '/wsdl/SdIRiceviNotifica_v1.0.wsdl'
     // )));
-    // $response = $notification->send();
+    // $response = $notification->send($notifFile);
 }
 catch (\Exception $e)
 {
