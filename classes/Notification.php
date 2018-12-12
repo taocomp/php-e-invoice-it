@@ -64,7 +64,7 @@ class Notification extends Document
         $fileSdI->IdentificativoSdI = $this->IdentificativoSdI;
         $fileSdI->NomeFile = basename($filename);
         $fileSdI->File = $this->asXml();
-        $fileSdI->encodeFile();
+        $fileSdI->removeBOM();
         
         return new RispostaSdINotificaEsito(self::$client->NotificaEsito($fileSdI));
     }

@@ -152,7 +152,7 @@ class Invoice extends Document
         $fileSdIBase = new FileSdIBase();
         $fileSdIBase->NomeFile = $this->getNomeFile();
         $fileSdIBase->File = $this->asXml();
-        $fileSdIBase->encodeFile();
+        $fileSdIBase->removeBOM();
         
         return new RispostaSdIRiceviFile(self::$client->RiceviFile($fileSdIBase));
     }
