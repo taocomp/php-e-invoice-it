@@ -1,0 +1,24 @@
+#+TITLE: PHP SdICoop - Invoice
+
+Italian e-invoicing: PHP classes for [[https://www.fatturapa.gov.it/export/fatturazione/en/sdi.htm?l=en][Italian Exchange System (SdI - "Sistema di Interscambio")]] invoice management.
+
+Please refer to
+- [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] to implement your web services required by SdI
+- [[https://github.com/taocomp/php-sdicoop-client][PHP SdICoop - Client]] to connect to SdI web services
+
+* Quickstart
+See ~examples/invoice.php~.
+
+* Getting started
+TODO
+
+* Server configuration, validation tests and more
+See [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] for server configuration, validation tests, etc.
+
+If you need a "ready to start" solution, or a consultancy for your PHP project, please feel free to contact us at [[mailto:sdicoop@taocomp.com][sdicoop@taocomp.com]].
+
+* Credits
+We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.
+
+* License
+GPLv3.
