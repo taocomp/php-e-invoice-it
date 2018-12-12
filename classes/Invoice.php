@@ -21,28 +21,62 @@
 
 namespace Taocomp\Sdicoop;
 
-class Invoice extends Document
+class Invoice extends AbstractDocument
 {
-    // Templates
+    /**
+     * Invoice templates
+     */
     protected static $templates = array();
 
-    // Client object, if any
-    protected static $client = null;
+    /**
+     * Optional prefix path where to save invoices.
+     */
+    protected static $destinationDir = null;
 
-    // --------------------------------------------------------------
-    // Set company data
-    // --------------------------------------------------------------
+    /**
+     * Invoice factory
+     */
+    public static function factory( string $template )
+    {
+        $obj = parent::factory($template);
+
+        // If $template is an invoice file, don't change data
+        if (is_readable($template)) {
+            return $obj;
+        }
+
+        // Set invoice format
+        $obj->FatturaElettronicaHeader->DatiTrasmissione->FormatoTrasmissione = $template;
+
+        return $obj;
+    }
+
+    /**
+     * Set destination dir (common prefix path when saving invoices)
+     */
+    public static function setDestinationDir( string $dir )
+    {
+        if (false === is_writeable($dir)) {
+            throw new \Exception("Directory '$dir' is not writeable");
+        }
+
+        self::$destinationDir = $dir;
+    }
+
+    /**
+     * Set company data
+     */
     public function setCompanyData( array $data )
     {
-        $IdTrasmittente = $this->FatturaElettronicaHeader->DatiTrasmissione->IdTrasmittente;
-        $IdTrasmittente->IdCodice = $data['IdCodice'];
-        $IdTrasmittente->IdPaese  = $data['IdPaese'];
+        $IT = $this->FatturaElettronicaHeader->DatiTrasmissione->IdTrasmittente;
+        $IT->IdCodice = $data['IdCodice'];
+        $IT->IdPaese  = $data['IdPaese'];
 
-        $DatiAnagrafici = $this->FatturaElettronicaHeader->CedentePrestatore->DatiAnagrafici;
-        $DatiAnagrafici->Anagrafica->Denominazione = $data['Denominazione'];
-        $DatiAnagrafici->IdFiscaleIVA->IdPaese     = $data['IdPaese'];
-        $DatiAnagrafici->IdFiscaleIVA->IdCodice    = $data['IdCodice'];
-        $DatiAnagrafici->RegimeFiscale             = $data['RegimeFiscale'];
+        $DA = $this->FatturaElettronicaHeader->CedentePrestatore->DatiAnagrafici;
+        $DA->Anagrafica->Denominazione = $data['Denominazione'];
+        $DA->IdFiscaleIVA->IdPaese     = $data['IdPaese'];
+        $DA->IdFiscaleIVA->IdCodice    = $data['IdCodice'];
+        $DA->RegimeFiscale             = $data['RegimeFiscale'];
 
         $Sede = $this->FatturaElettronicaHeader->CedentePrestatore->Sede;
         $Sede->Indirizzo = $data['Indirizzo'];
@@ -54,82 +88,45 @@ class Invoice extends Document
         return $this;
     }
 
-    // --------------------------------------------------------------
-    // Factory
-    // --------------------------------------------------------------    
-    public static function factory( string $template, array $company = array() )
-    {
-        $obj = parent::factory($template);
-
-        // If $template is an invoice file, don't change data
-        if (is_readable($template)) {
-            return $obj;
-        }
-
-        // Company data
-        if (!empty($company)) {
-            $obj->setCompanyData($company);
-        }
-
-        // Invoice format
-        $obj->FatturaElettronicaHeader->DatiTrasmissione->FormatoTrasmissione = $template;
-
-        return $obj;
-    }
-
-    // --------------------------------------------------------------
-    // Add node PECDestinatario and set value
-    // --------------------------------------------------------------
+    /**
+     * Set value for "PECDestinatario" (and create node if not present)
+     */
     public function setPECDestinatario( string $value )
     {
-        // Add node if not present
-        if (!isset($this->FatturaElettronicaHeader->DatiTrasmissione->PECDestinatario)) {
-            $this->FatturaElettronicaHeader->DatiTrasmissione->addChild('PECDestinatario');
+        $DT = $this->FatturaElettronicaHeader->DatiTrasmissione;
+        
+        if (!isset($DT->PECDestinatario)) {
+            $DT->addChild('PECDestinatario');
         }
         
-        $this->FatturaElettronicaHeader->DatiTrasmissione->PECDestinatario = $value;
+        $DT->PECDestinatario = $value;
 
         return $this;
     }
 
-    // --------------------------------------------------------------
-    // Unset node PECDestinatario
-    // --------------------------------------------------------------
+    /**
+     * Unset node "PECDestinatario"
+     */
     public function unsetPECDestinatario()
     {
-        if (isset($this->FatturaElettronicaHeader->DatiTrasmissione->PECDestinatario)) {
-            unset($this->FatturaElettronicaHeader->DatiTrasmissione->PECDestinatario);
+        $DT = $this->FatturaElettronicaHeader->DatiTrasmissione;
+
+        if (isset($DT->PECDestinatario)) {
+            unset($DT->PECDestinatario);
         }
 
         return $this;
     }
 
-    // --------------------------------------------------------------
-    // Create a new notification from current invoice
-    // --------------------------------------------------------------
-    public function prepareNotification( $template )
-    {
-        $DatiGeneraliDocumento = $this->FatturaElettronicaBody->DatiGenerali->DatiGeneraliDocumento;
-        $NumeroFattura = (string)$DatiGeneraliDocumento->Numero;
-        $AnnoFattura = substr((string)$DatiGeneraliDocumento->Data, 0, 4);
-
-        $notification = Notification::factory($template);
-        $notification->RiferimentoFattura->NumeroFattura = $NumeroFattura;
-        $notification->RiferimentoFattura->AnnoFattura = $AnnoFattura;
-        $notification->Esito = Notification::EC01;
-
-        return $notification;
-    }
-
-    // --------------------------------------------------------------
-    // Get invoice's filename
-    // --------------------------------------------------------------
-    public function getNomeFile()
+    /**
+     * Get a valid invoice filename
+     */
+    public function getFilename()
     {
         $id = (string)$this->FatturaElettronicaHeader->DatiTrasmissione->ProgressivoInvio;
-        $IdTrasmittente = $this->FatturaElettronicaHeader->DatiTrasmissione->IdTrasmittente;
-        $codice = (string)$IdTrasmittente->IdCodice;
-        $paese = (string)$IdTrasmittente->IdPaese;
+        $IT = $this->FatturaElettronicaHeader->DatiTrasmissione->IdTrasmittente;
+        $codice = (string)$IT->IdCodice;
+        $paese = (string)$IT->IdPaese;
 
         if (!$id) {
             throw new \Exception(__FUNCTION__ . ': ProgressivoInvio is empty');
@@ -144,16 +141,38 @@ class Invoice extends Document
         return "{$paese}{$codice}_$id.xml";
     }
 
-    // --------------------------------------------------------------
-    // Send invoice to SdI
-    // --------------------------------------------------------------
-    public function send()
+    /**
+     * Save invoice to $destDir or self::$destinationDir or current dir.
+     */
+    public function save( string $destDir = null, bool $overwrite = false )
     {
-        $fileSdIBase = new FileSdIBase();
-        $fileSdIBase->NomeFile = $this->getNomeFile();
-        $fileSdIBase->File = $this->asXml();
-        $fileSdIBase->removeBOM();
-        
-        return new RispostaSdIRiceviFile(self::$client->RiceviFile($fileSdIBase));
+        $filename = $this->getFilename();
+
+        if (is_readable($destDir)) {
+            return parent::save("$destDir/$filename", $overwrite);
+        }
+
+        if (is_readable(self::$destinationDir)) {
+            return parent::save(self::$destinationDir . "/$filename", $overwrite);
+        }
+
+        return parent::save($filename, $overwrite);
+    }
+
+    /**
+     * Create a new notification for/from current invoice
+     */
+    public function prepareNotification( $template )
+    {
+        $DGD = $this->FatturaElettronicaBody->DatiGenerali->DatiGeneraliDocumento;
+        $NumeroFattura = (string)$DGD->Numero;
+        $AnnoFattura = substr((string)$DGD->Data, 0, 4);
+
+        $notification = Notification::factory($template);
+        $notification->RiferimentoFattura->NumeroFattura = $NumeroFattura;
+        $notification->RiferimentoFattura->AnnoFattura = $AnnoFattura;
+        $notification->Esito = Notification::EC01;
+
+        return $notification;
     }
 }

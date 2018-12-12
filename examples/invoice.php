@@ -19,25 +19,22 @@
  * along with php-sdicoop-invoice.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-ini_set("soap.wsdl_cache_enabled", 0);
-ini_set('soap.wsdl_cache_ttl', 0);
-
 use \Taocomp\Sdicoop\Invoice;
 use \Taocomp\Sdicoop\Notification;
 
 try
 {
-    // ---------------------------------------------
-    // Invoice: create, edit, save and send to SdI
-    // ---------------------------------------------
     require_once(__DIR__ . '/../autoload.php');
 
-    // Load templates
+    // Add some invoice templates
     Invoice::addTemplate('FPA12', __DIR__ . '/../templates/FPA12.xml');
     Invoice::addTemplate('FPR12', __DIR__ . '/../templates/FPR12.xml');
 
-    // Company data
-    $company = array(
+    // Create a new FPR12 invoice
+    $invoice = Invoice::factory('FPR12');
+
+    // Set some invoice data
+    $invoice->setCompanyData(array(
         'Denominazione' => 'ALPHA',
         'IdCodice'      => '01234567890',
         'IdPaese'       => 'IT',
@@ -47,50 +44,34 @@ try
         'Comune'        => 'LECCE',
         'Provincia'     => 'LE',
         'Nazione'       => 'IT'
-    );
-
-    // Create a new FPR12 invoice
-    $invoice = Invoice::factory('FPR12', $company);
-
-    // Set invoice data
-    $DatiTrasmissione = $invoice->FatturaElettronicaHeader->DatiTrasmissione;
-    $DatiTrasmissione->ProgressivoInvio = random_int(10000, 99999);
-    $DatiTrasmissione->CodiceDestinatario = '0000000';
+    ));
+    $invoice->setPECDestinatario('pec@example.com');
+    $DT = $invoice->FatturaElettronicaHeader->DatiTrasmissione;
+    $DT->ProgressivoInvio = random_int(10000, 99999);
+    $DT->CodiceDestinatario = '0000000';
 
     // Save invoice
-    $file = $invoice->getNomeFile();
-    $invoice->save($file);
+    $invoice->save(__DIR__);
+    // or
+    // Invoice::setDestinationDir(__DIR__);
+    // $invoice->save();
 
-    // // Send invoice to SdI
-    // require_once('/path/to/php-sdicoop-client/autoload.php');
-    // Invoice::setClient(new Client(array(
-    //     'endpoint' => 'https://testservizi.fatturapa.it/ricevi_file',
-    //     'wsdl'     => CLIENT_DIR . '/wsdl/SdIRiceviFile_v1.0.wsdl'
-    // )));
-    // $response = $invoice->send();
-
-    // ---------------------------------------------
-    // Notifications
-    // ---------------------------------------------
+    // Add a notification template
     Notification::addTemplate('EC', __DIR__ . '/../templates/EC.xml');
 
     // Create a notification from invoice
     $notification = $invoice->prepareNotification('EC');
+    // or an empty one:
+    // $notification = Notification::factory('EC');
 
     // Edit data
     $notification->IdentificativoSdI = 1010101;
+    $notification->Descrizione = '';
 
     // Save to file
-    $notifFile = basename($file, '.xml') . '_EC_001.xml';
-    $notification->save($notifFile);
-
-    // Send to SdI
-    // require_once('/path/to/php-sdicoop-client/autoload.php');
-    // Notification::setClient(new Client(array(
-    //     'endpoint' => 'https://testservizi.fatturapa.it/ricevi_notifica',
-    //     'wsdl'     => CLIENT_DIR . '/wsdl/SdIRiceviNotifica_v1.0.wsdl'
-    // )));
-    // $response = $notification->send($notifFile);
+    $notificationFile = basename($invoice->getFilename(), '.xml')
+                      . '_EC_001.xml';
+    $notification->save($notificationFile, true);
 }
 catch (\Exception $e)
 {

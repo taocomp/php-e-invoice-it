@@ -21,11 +21,11 @@
 
 namespace Taocomp\Sdicoop;
 
-class Document extends \SimpleXMLElement
+abstract class AbstractDocument extends \SimpleXMLElement
 {
-    // --------------------------------------------------------------
-    // Add templates (FPR12, FPA12, EC, ...)
-    // --------------------------------------------------------------    
+    /**
+     * Add a XML template from file (FPA12, FPR12, EC, ...)
+     */
     public static function addTemplate( string $version, string $file )
     {
         if (false === is_readable($file)) {
@@ -36,22 +36,14 @@ class Document extends \SimpleXMLElement
         static::$templates[$version] = file_get_contents($file);
     }
 
-    // --------------------------------------------------------------
-    // Set/Get Client
-    // --------------------------------------------------------------
-    public static function setClient( Client $client )
-    {
-        static::$client = $client;
-    }
-    public static function getClient()
-    {
-        return static::$client;
-    }
-
-    // --------------------------------------------------------------
-    // Factory
-    // --------------------------------------------------------------
-    public static function factory( string $template )
+    /**
+     * Invoice/Notification factory.
+     *
+     * You can pass a filepath or a template as param:
+     * Invoice::factory('/path/to/invoice.xml');
+     * Invoice::factory('FPR12');
+     */
+    protected static function factory( string $template )
     {
         if (is_readable($template)) {
             return new static($template, 0, true);
@@ -59,7 +51,7 @@ class Document extends \SimpleXMLElement
             $template = strtoupper($template);
 
             if (!array_key_exists($template, static::$templates)) {
-                throw new \Exception("Cannot find template for '$template'");
+                throw new \Exception("Cannot find a template for '$template'");
             }
 
             return new static(static::$templates[$template]);
@@ -68,20 +60,20 @@ class Document extends \SimpleXMLElement
         throw new \Exception("Cannot create a document from '$template'");
     }
 
-    // --------------------------------------------------------------
-    // Save document to file
-    // --------------------------------------------------------------
-    public function save( string $file, bool $overwrite = false )
+    /**
+     * Save document to file.
+     */
+    public function save( string $dest, bool $overwrite = false )
     {
         $classArray = explode('\\', __CLASS__);
         $class = array_pop($classArray);
 
-        if (file_exists($file) && false === $overwrite) {
-            throw new \Exception("$class '$file' already exists");
+        if (file_exists($dest) && false === $overwrite) {
+            throw new \Exception("$class '$dest' already exists");
         }
 
-        if (false === file_put_contents($file, $this->asXml(), LOCK_EX)) {
-            throw new \Exception("Cannot save $class to '$file'");
+        if (false === file_put_contents($dest, $this->asXml(), LOCK_EX)) {
+            throw new \Exception("Cannot save $class to '$dest'");
         }
 
         return $this;
