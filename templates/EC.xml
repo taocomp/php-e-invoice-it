@@ -4,9 +4,6 @@
   <RiferimentoFattura>
     <NumeroFattura>1111</NumeroFattura>
     <AnnoFattura>2013</AnnoFattura>
-    <PosizioneFattura>2</PosizioneFattura>
   </RiferimentoFattura>
   <Esito>EC01</Esito>
-  <Descrizione>Esempio</Descrizione>
-  <MessageIdCommittente>123456</MessageIdCommittente>
 </types:NotificaEsitoCommittente>

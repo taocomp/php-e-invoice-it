@@ -64,6 +64,14 @@ class Invoice extends AbstractDocument
     }
 
     /**
+     * Get destination dir
+     */
+    public static function getDestinationDir()
+    {
+        return self::$destinationDir;
+    }
+    
+    /**
      * Set company data
      */
     public function setCompanyData( array $data )
