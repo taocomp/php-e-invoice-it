@@ -24,37 +24,42 @@ namespace Taocomp\Sdicoop;
 abstract class AbstractDocument extends \SimpleXMLElement
 {
     /**
-     * Add a XML template from file (FPA12, FPR12, EC, ...)
+     * Set an XML template from file (FPA12, FPR12, EC, ...)
      */
-    public static function addTemplate( string $version, string $file )
+    public static function setTemplate( string $version, string $file )
     {
         if (false === is_readable($file)) {
             throw new \Exception("File '$file' not found or not readable");
         }
 
-        $version = strtoupper($version);
         static::$templates[$version] = file_get_contents($file);
+    }
+
+    public static function getTemplate( string $template )
+    {
+        if (false === array_key_exists($template, static::$templates)) {
+            throw new \Exception("Cannot find a template for '$template'");
+        }
+
+        return static::$templates[$template];
     }
 
     /**
      * Invoice/Notification factory.
      *
-     * You can pass a filepath or a template as param:
+     * You can pass a filepath or a template key as param:
      * Invoice::factory('/path/to/invoice.xml');
      * Invoice::factory('FPR12');
      */
-    protected static function factory( string $template )
+    public static function factory( string $template )
     {
         if (is_readable($template)) {
+            // We pass a file
             return new static($template, 0, true);
         } else {
-            $template = strtoupper($template);
-
-            if (!array_key_exists($template, static::$templates)) {
-                throw new \Exception("Cannot find a template for '$template'");
-            }
-
-            return new static(static::$templates[$template]);
+            // We pass a template key
+            $template = static::getTemplate($template);
+            return new static($template);
         }
         
         throw new \Exception("Cannot create a document from '$template'");

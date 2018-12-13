@@ -35,21 +35,6 @@ class Notification extends AbstractDocument
     protected static $templates = array();
 
     /**
-     * Notification factory
-     */
-    public static function factory( string $template )
-    {
-        $obj = parent::factory($template);
-
-        // If $template is a notification file, don't change data
-        if (is_readable($template)) {
-            return $obj;
-        }
-
-        return $obj;
-    }
-
-    /**
      * Save notification
      */
     public function save( string $dest, bool $overwrite = false)

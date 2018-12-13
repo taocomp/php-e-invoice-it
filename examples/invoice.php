@@ -27,8 +27,8 @@ try
     require_once(__DIR__ . '/../autoload.php');
 
     // Add some invoice templates
-    Invoice::addTemplate('FPA12', __DIR__ . '/../templates/FPA12.xml');
-    Invoice::addTemplate('FPR12', __DIR__ . '/../templates/FPR12.xml');
+    Invoice::setTemplate('FPA12', __DIR__ . '/../templates/FPA12.xml');
+    Invoice::setTemplate('FPR12', __DIR__ . '/../templates/FPR12.xml');
 
     // Create a new FPR12 invoice
     $invoice = Invoice::factory('FPR12');
@@ -49,6 +49,9 @@ try
     $DT = $invoice->FatturaElettronicaHeader->DatiTrasmissione;
     $DT->ProgressivoInvio = random_int(10000, 99999);
     $DT->CodiceDestinatario = '0000000';
+    $DGD = $invoice->FatturaElettronicaBody->DatiGenerali->DatiGeneraliDocumento;
+    $DGD->Numero = 98765;
+    $DGD->Data = date('Y-m-d');
 
     // Save invoice
     $invoice->save(__DIR__);
@@ -57,7 +60,7 @@ try
     // $invoice->save();
 
     // Add a notification template
-    Notification::addTemplate('EC', __DIR__ . '/../templates/EC.xml');
+    Notification::setTemplate('EC', __DIR__ . '/../templates/EC.xml');
 
     // Create a notification from invoice
     $notification = $invoice->prepareNotification('EC');
@@ -66,10 +69,11 @@ try
 
     // Edit data
     $notification->IdentificativoSdI = 1010101;
-    $notification->Descrizione = '';
+    $notification->Esito = Notification::EC02;
 
     // Save to file
-    $notificationFile = basename($invoice->getFilename(), '.xml')
+    $notificationFile = __DIR__ . '/'
+                      . basename($invoice->getFilename(), '.xml')
                       . '_EC_001.xml';
     $notification->save($notificationFile, true);
 }

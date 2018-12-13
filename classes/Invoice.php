@@ -24,7 +24,7 @@ namespace Taocomp\Sdicoop;
 class Invoice extends AbstractDocument
 {
     /**
-     * Invoice templates
+     * Invoice templates.
      */
     protected static $templates = array();
 
@@ -32,24 +32,6 @@ class Invoice extends AbstractDocument
      * Optional prefix path where to save invoices.
      */
     protected static $destinationDir = null;
-
-    /**
-     * Invoice factory
-     */
-    public static function factory( string $template )
-    {
-        $obj = parent::factory($template);
-
-        // If $template is an invoice file, don't change data
-        if (is_readable($template)) {
-            return $obj;
-        }
-
-        // Set invoice format
-        $obj->FatturaElettronicaHeader->DatiTrasmissione->FormatoTrasmissione = $template;
-
-        return $obj;
-    }
 
     /**
      * Set destination dir (common prefix path when saving invoices)
