@@ -34,24 +34,27 @@ try
     $invoice = Invoice::factory('FPR12');
 
     // Set some invoice data
-    $invoice->setCompanyData(array(
-        'Denominazione' => 'ALPHA',
-        'IdCodice'      => '01234567890',
-        'IdPaese'       => 'IT',
-        'RegimeFiscale' => 'RF19',
-        'Indirizzo'     => 'VIA DEL TAO 3',
-        'CAP'           => '73100',
-        'Comune'        => 'LECCE',
-        'Provincia'     => 'LE',
-        'Nazione'       => 'IT'
+    $invoice->DatiTrasmissione(array(
+        'IdTrasmittente/IdCodice' => '00011122233',
+        'IdTrasmittente/IdPaese'  => 'IT',
     ));
-    $invoice->setPECDestinatario('pec@example.com');
-    $DT = $invoice->FatturaElettronicaHeader->DatiTrasmissione;
-    $DT->ProgressivoInvio = random_int(10000, 99999);
-    $DT->CodiceDestinatario = '0000000';
-    $DGD = $invoice->FatturaElettronicaBody->DatiGenerali->DatiGeneraliDocumento;
-    $DGD->Numero = 98765;
-    $DGD->Data = date('Y-m-d');
+
+    $invoice->CedentePrestatore(array(
+        'DatiAnagrafici/IdFiscaleIVA/IdPaese'     => 'IT',
+        'DatiAnagrafici/IdFiscaleIVA/IdCodice'    => '00011122233',
+        'DatiAnagrafici/Anagrafica/Denominazione' => 'GAMMA',
+        'DatiAnagrafici/RegimeFiscale'            => 'RF19',
+        'Sede/Indirizzo'                          => 'VIA DEL TAO 3',
+        'Sede/CAP'                                => '73100'
+    ));
+
+    $invoice->DatiTrasmissione()->ProgressivoInvio = random_int(10000, 99999);
+    $invoice->DatiTrasmissione()->CodiceDestinatario = '0000000';
+
+    $invoice->DatiGenerali(array(
+        'DatiGeneraliDocumento/Numero' => 98765,
+        'DatiGeneraliDocumento/Data'   => date('Y-m-d')
+    ));
 
     // Save invoice
     $invoice->save(__DIR__);

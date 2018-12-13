@@ -24,6 +24,16 @@ namespace Taocomp\Sdicoop;
 class Invoice extends AbstractDocument
 {
     /**
+     * Xpath for header
+     */
+    const XPATH_HEADER = '/p:FatturaElettronica/FatturaElettronicaHeader';
+
+    /**
+     * Xpath for body
+     */
+    const XPATH_BODY = '/p:FatturaElettronica/FatturaElettronicaBody';
+
+    /**
      * Invoice templates.
      */
     protected static $templates = array();
@@ -32,6 +42,24 @@ class Invoice extends AbstractDocument
      * Optional prefix path where to save invoices.
      */
     protected static $destinationDir = null;
+
+    /**
+     * Main section in invoice header
+     */
+    protected static $headerSections = array(
+        'DatiTrasmissione',
+        'CedentePrestatore',
+        'CessionarioCommittente'
+    );
+
+    /**
+     * Main section in invoice body
+     */
+    protected static $bodySections = array(
+        'DatiGenerali',
+        'DatiBeniServizi',
+        'DatiPagamento'
+    );
 
     /**
      * Set destination dir (common prefix path when saving invoices)
@@ -52,64 +80,66 @@ class Invoice extends AbstractDocument
     {
         return self::$destinationDir;
     }
+
+    /**
+     * Shortcuts for $this->FatturaElettronica{Header,Body}->*
+     */
+    public function __call( string $name, $args )
+    {
+        if (true === in_array($name, self::$headerSections)) {
+            $path = self::XPATH_HEADER;
+        } else if (true === in_array($name, self::$bodySections)) {
+            $path = self::XPATH_BODY;
+        } else {
+            throw new \Exception("Cannot find section '$name'");
+        }
+
+        $values = array();
+        if (is_array($args) && false === empty($args) &&  is_array($args[0])) {
+            $values = $args[0];
+        }
+        return $this->populateSection("$path/$name", $values);
+    }
+
+    /**
+     * Get a main section from header or body via-xpath
+     */
+    protected function getSection( string $path )
+    {
+        $xpath = $this->xpath($path);
+        
+        if (false === $xpath || 1 !== count($xpath)) {
+            throw new \Exception("Wrong path '$path'");
+        }
+
+        return $xpath[0];
+    }
+
+    /**
+     * Populate section
+     */
+    protected function populateSection( string $path, array $values )
+    {
+        $mainNode = $this->getSection($path);
+
+        if (false === empty($values)) {
+            foreach ($values as $subpath => $value) {
+                $items = explode('/', $subpath);
+                if (1 === count($items)) {
+                    $mainNode->$subpath = $value;
+                } else {
+                    $key = array_pop($items);
+                    $subnode = $this->getSection("$path/" . implode('/', $items));
+                    $subnode->$key = $value;
+                }
+            }
+        }
+
+        return $mainNode;
+    }
     
     /**
-     * Set company data
-     */
-    public function setCompanyData( array $data )
-    {
-        $IT = $this->FatturaElettronicaHeader->DatiTrasmissione->IdTrasmittente;
-        $IT->IdCodice = $data['IdCodice'];
-        $IT->IdPaese  = $data['IdPaese'];
-
-        $DA = $this->FatturaElettronicaHeader->CedentePrestatore->DatiAnagrafici;
-        $DA->Anagrafica->Denominazione = $data['Denominazione'];
-        $DA->IdFiscaleIVA->IdPaese     = $data['IdPaese'];
-        $DA->IdFiscaleIVA->IdCodice    = $data['IdCodice'];
-        $DA->RegimeFiscale             = $data['RegimeFiscale'];
-
-        $Sede = $this->FatturaElettronicaHeader->CedentePrestatore->Sede;
-        $Sede->Indirizzo = $data['Indirizzo'];
-        $Sede->CAP       = $data['CAP'];
-        $Sede->Comune    = $data['Comune'];
-        $Sede->Provincia = $data['Provincia'];
-        $Sede->Nazione   = $data['Nazione'];
-
-        return $this;
-    }
-
-    /**
-     * Set value for "PECDestinatario" (and create node if not present)
-     */
-    public function setPECDestinatario( string $value )
-    {
-        $DT = $this->FatturaElettronicaHeader->DatiTrasmissione;
-        
-        if (!isset($DT->PECDestinatario)) {
-            $DT->addChild('PECDestinatario');
-        }
-        
-        $DT->PECDestinatario = $value;
-
-        return $this;
-    }
-
-    /**
-     * Unset node "PECDestinatario"
-     */
-    public function unsetPECDestinatario()
-    {
-        $DT = $this->FatturaElettronicaHeader->DatiTrasmissione;
-
-        if (isset($DT->PECDestinatario)) {
-            unset($DT->PECDestinatario);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Get a valid invoice filename
+     * Retrieve invoice filename
      */
     public function getFilename()
     {
