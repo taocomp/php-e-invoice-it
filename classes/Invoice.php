@@ -101,6 +101,17 @@ class Invoice extends AbstractDocument
         return $this->populateSection("$path/$name", $values);
     }
 
+    public function header( string $path )
+    {
+        $pathSeparator = substr($path, 0, 1) === '/' ? '' : '/*/';
+        $path = self::XPATH_HEADER . $pathSeparator . $path;
+        $xpath = $this->xpath($path);
+        if (1 !== count($xpath)) {
+            throw new \Exception("Ambiguous path '$path'");
+        }
+        return $xpath[0];
+    }
+
     /**
      * Get a main section from header or body via-xpath
      */
