@@ -2,8 +2,10 @@
 
 Italian e-invoicing: PHP package for invoice and notification management.
 
+(Currently under heavy development.)
+
 Please refer to
-- [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] to implement your web services required by SdI
+- [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] to implement the web services required by SdI
 - [[https://github.com/taocomp/php-sdicoop-client][PHP SdICoop - Client]] to connect to SdI web services
 
 * Quickstart
