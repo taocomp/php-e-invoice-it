@@ -1,25 +1,22 @@
-#+TITLE: PHP SdICoop - Invoice
+#+TITLE: PHP EinvoiceIt
 
-Italian e-invoicing: PHP package for invoice and notification management.
-
-(Currently under heavy development.)
+Italian e-invoicing: PHP package for e-invoice and notification management.
 
 Please refer to
-- [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] to implement the web services required by SdI
+- [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] for implementing web services required by the Italian Exchange System (aka "SdI")
 - [[https://github.com/taocomp/php-sdicoop-client][PHP SdICoop - Client]] to connect to SdI web services
 
-* Quickstart
-See ~examples/invoice.php~.
-
-* Getting started
-TODO
-
-* Server configuration, interoperability tests and more
 See [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] for server configuration, interoperability tests, etc. In particular:
 - Apache configuration :: [[https://forum.italia.it/t/accreditamento-sdicoop-configurazione-ssl-su-apache/3314][Accreditamento SDICoop: configurazione SSL su Apache - Fatturazione Elettroni...]]
 - Interoperability tests :: [[https://forum.italia.it/t/test-interoperabilita-soluzioni/4370][Test Interoperabilità Soluzioni - Fatturazione Elettronica - Forum Italia]]
 
 If you need a "ready to start" solution, or a consultancy for your PHP project, please feel free to contact us at [[mailto:sdicoop@taocomp.com][sdicoop@taocomp.com]].
+
+* Quickstart
+See ~examples/*~.
+
+* Getting started
+TODO
 
 * Credits
 We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.
