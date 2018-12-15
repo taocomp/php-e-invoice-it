@@ -19,66 +19,69 @@
  * along with php-sdicoop-invoice.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use \Taocomp\Sdicoop\Invoice;
-use \Taocomp\Sdicoop\Notification;
+use \Taocomp\EinvoiceIt\FatturaElettronica;
+use \Taocomp\EinvoiceIt\NotificaEsitoCommittente;
 
 try
 {
     require_once(__DIR__ . '/../autoload.php');
 
-    // Add some invoice templates
-    Invoice::setTemplate('FPA12', __DIR__ . '/../templates/FPA12.xml');
-    Invoice::setTemplate('FPR12', __DIR__ . '/../templates/FPR12.xml');
+    // --------------------------------------------------------------
+    // Invoice
+    // --------------------------------------------------------------
 
-    // Create a new FPR12 invoice
-    $invoice = Invoice::factory('FPR12');
+    // Create a new FPR12 invoice with 2 bodies
+    $invoice = new FatturaElettronica('FPR12');
+    $invoice->setBatchSize(2);
+    $invoice->setLineItemCount(3, 2);
 
-    // Set some invoice data
-    $invoice->DatiTrasmissione(array(
-        'IdTrasmittente/IdCodice' => '00011122233',
-        'IdTrasmittente/IdPaese'  => 'IT',
+    // Set single value
+    $invoice->setValue('ProgressivoInvio', 10001);
+
+    // Set multiple values
+    $invoice->setValues('IdTrasmittente', array(
+        'IdCodice' => '09876543210',
+        'IdPaese' => 'IT'
+    ));
+    $invoice->setValues('CedentePrestatore/Sede', array(
+        'Indirizzo' => 'VIA UNIVERSO 1'
+    ));
+    $invoice->setValues('CessionarioCommittente', array(
+        // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
+        'DatiAnagrafici/CodiceFiscale' => '01234567890',
+        // Denominazione, somewhere inside CessionarioCommittente
+        './/Denominazione' => 'BETA SRL'
     ));
 
-    $invoice->CedentePrestatore(array(
-        'DatiAnagrafici/IdFiscaleIVA/IdPaese'     => 'IT',
-        'DatiAnagrafici/IdFiscaleIVA/IdCodice'    => '00011122233',
-        'DatiAnagrafici/Anagrafica/Denominazione' => 'GAMMA',
-        'DatiAnagrafici/RegimeFiscale'            => 'RF19',
-        'Sede/Indirizzo'                          => 'VIA DEL TAO 3',
-        'Sede/CAP'                                => '73100'
-    ));
-
-    $invoice->DatiTrasmissione()->ProgressivoInvio = random_int(10000, 99999);
-    $invoice->DatiTrasmissione()->CodiceDestinatario = '0000000';
-
-    $invoice->DatiGenerali(array(
-        'DatiGeneraliDocumento/Numero' => 98765,
-        'DatiGeneraliDocumento/Data'   => date('Y-m-d')
-    ));
+    // Set values for second body
+    $body2 = $invoice->getBody(2);
+    $invoice->setValue('.//Numero', 44, $body2);
+    $invoice->setValue('.//Data', '2018-12-12', $body2);
 
     // Save invoice
-    $invoice->save(__DIR__);
-    // or
-    // Invoice::setDestinationDir(__DIR__);
-    // $invoice->save();
+    $invoice->save();
 
-    // Add a notification template
-    Notification::setTemplate('EC', __DIR__ . '/../templates/EC.xml');
+    
+    // --------------------------------------------------------------
+    // Notification
+    // --------------------------------------------------------------
 
-    // Create a notification from invoice
-    $notification = $invoice->prepareNotification('EC');
-    // or an empty one:
-    // $notification = Notification::factory('EC');
+    // Create notification
+    $notification = new NotificaEsitoCommittente();
 
-    // Edit data
-    $notification->IdentificativoSdI = 1010101;
-    $notification->Esito = Notification::EC02;
+    // Set some values from invoice
+    $notification->setValuesFromInvoice($invoice, 2);
 
-    // Save to file
-    $notificationFile = __DIR__ . '/'
-                      . basename($invoice->getFilename(), '.xml')
-                      . '_EC_001.xml';
-    $notification->save($notificationFile, true);
+    // Set values
+    $notification->setValue('IdentificativoSdI', 1234567);
+    $notification->setValue('Esito', NotificaEsitoCommittente::EC01);
+
+    // Set filename from invoice
+    $notification->setFilenameFromInvoice($invoice, '_EC_001');
+
+    // Save notification
+    $notification->save();
+
 }
 catch (\Exception $e)
 {
