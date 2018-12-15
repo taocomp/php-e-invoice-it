@@ -23,7 +23,7 @@
 // https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-4-autoloader-examples.md
 spl_autoload_register(function ($class) {
     // project-specific namespace prefix
-    $prefix = 'Taocomp\\Sdicoop\\';
+    $prefix = 'Taocomp\\EinvoiceIt\\';
 
     // base directory for the namespace prefix
     $base_dir = __DIR__ . '/classes/';

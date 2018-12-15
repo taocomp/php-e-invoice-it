@@ -19,39 +19,39 @@
  * along with php-sdicoop-invoice.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace Taocomp\Sdicoop;
+namespace Taocomp\EinvoiceIt;
 
-class Notification extends AbstractDocument
+class NotificaEsitoCommittente extends AbstractNotification
 {
     /**
-     * Constants
+     * Constants for "Esito"
      */
     const EC01 = 'EC01';
     const EC02 = 'EC02';
 
     /**
-     * Notification templates
+     * Notification elements
      */
-    protected static $templates = array();
+    public static $templateArray = array(
+        'IdentificativoSdI' => '',
+        'RiferimentoFattura' => array(
+            'NumeroFattura' => '',
+            'AnnoFattura' => ''
+        ),
+        'Esito' => ''
+    );
 
     /**
-     * Save notification
+     * Populate notification values from invoice
      */
-    public function save( string $dest, bool $overwrite = false)
+    public function setValuesFromInvoice( FatturaElettronica $invoice, $body = 1 )
     {
-        if (isset($this->Descrizione) && empty((string)$this->Descrizione)) {
-            unset($this->Descrizione);
-        }
-        
-        if (isset($this->MessageIdCommittente) && empty((string)$this->MessageIdCommittente)) {
-            unset($this->MessageIdCommittente);
-        }
+        $body = $invoice->getBody($body);
+        $this->setValue('NumeroFattura', $invoice->getValue(".//DatiGeneraliDocumento/Numero", $body));
 
-        $RF = $this->RiferimentoFattura;
-        if (isset($RF->PosizioneFattura) && empty((string)$RF->PosizioneFattura)) {
-            unset($RF->PosizioneFattura);
-        }
+        $anno = substr($invoice->getValue('.//DatiGeneraliDocumento/Data', $body), 0, 4);
+        $this->setValue('AnnoFattura', $anno);
 
-        return parent::save($dest, $overwrite);
+        return $this;
     }
 }
