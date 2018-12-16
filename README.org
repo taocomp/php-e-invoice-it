@@ -16,8 +16,18 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 See ~examples/*~.
 
 * Getting started
-TODO
-
+** Invoice
+*** Create a new invoice
+*** Load an invoice from file
+*** Batch invoices
+*** Line item count
+*** Set values
+*** Save invoice
+** Notification
+*** Create a new notification
+*** Load a notification from file
+*** Set values
+*** Save notification
 * Credits
 We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.
 
