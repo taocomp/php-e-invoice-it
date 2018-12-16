@@ -74,7 +74,7 @@ abstract class AbstractNotice extends AbstractDocument
         return $this;
     }
 
-    public function setFilenameFromInvoice( Invoice $invoice, string $suffix )
+    public function setFilenameFromInvoice( FatturaElettronica $invoice, string $suffix )
     {
         $filename = basename($invoice->getFilename(), '.xml') . $suffix . '.xml';
         return $this->setFilename($filename);
@@ -83,5 +83,5 @@ abstract class AbstractNotice extends AbstractDocument
     /**
      * Populate some notice values from invoice
      */
-    abstract public function setValuesFromInvoice( Invoice $invoice, $body = 1 );
+    abstract public function setValuesFromInvoice( FatturaElettronica $invoice, $body = 1 );
 }

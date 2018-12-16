@@ -20,12 +20,12 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 *** Create a new invoice
 Create a new FPA12 invoice:
 #+BEGIN_SRC 
-$invoice = new Invoice('FPA12');
+$invoice = new FatturaElettronica('FPA12');
 #+END_SRC
 
 Create a new FPR12 invoice:
 #+BEGIN_SRC 
-$invoice = new Invoice('FPR12');
+$invoice = new FatturaElettronica('FPR12');
 #+END_SRC
 
 *** Load an invoice from file
@@ -97,7 +97,7 @@ $invoice->save();
 *** Create a new notice
 NotificaEsitoCommittente:
 #+BEGIN_SRC 
-$notice = new ClientOutcome();
+$notice = new EsitoCommittente();
 #+END_SRC
 
 *** Load a notice from file
@@ -108,7 +108,7 @@ $notice->setValuesFromInvoice($invoice, 2);
 
 // Set values
 $notice->setValue('IdentificativoSdI', 1234567);
-$notice->setValue('Esito', ClientOutcome::EC01);
+$notice->setValue('Esito', EsitoCommittente::EC01);
 #+END_SRC
 
 *** Save notice

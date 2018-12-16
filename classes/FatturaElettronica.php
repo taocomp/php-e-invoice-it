@@ -21,7 +21,7 @@
 
 namespace Taocomp\EinvoiceIt;
 
-class Invoice extends AbstractDocument
+class FatturaElettronica extends AbstractDocument
 {
     /**
      * Invoice formats

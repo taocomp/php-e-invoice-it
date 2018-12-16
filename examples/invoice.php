@@ -19,8 +19,8 @@
  * along with php-e-invoice-it.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use \Taocomp\EinvoiceIt\Invoice;
-use \Taocomp\EinvoiceIt\ClientOutcome;
+use \Taocomp\EinvoiceIt\FatturaElettronica;
+use \Taocomp\EinvoiceIt\EsitoCommittente;
 
 try
 {
@@ -31,7 +31,7 @@ try
     // --------------------------------------------------------------
 
     // Create a new FPR12 invoice with 2 bodies
-    $invoice = new Invoice('FPR12');
+    $invoice = new FatturaElettronica('FPR12');
     $invoice->setLotSize(2);
     $invoice->setLineItemCount(3, 2);
 
@@ -67,14 +67,14 @@ try
     // --------------------------------------------------------------
 
     // Create notice
-    $notice = new ClientOutcome();
+    $notice = new EsitoCommittente();
 
     // Set some values from invoice
     $notice->setValuesFromInvoice($invoice, 2);
 
     // Set values
     $notice->setValue('IdentificativoSdI', 1234567);
-    $notice->setValue('Esito', ClientOutcome::EC01);
+    $notice->setValue('Esito', EsitoCommittente::EC01);
 
     // Set filename from invoice
     $notice->setFilenameFromInvoice($invoice, '_EC_001');

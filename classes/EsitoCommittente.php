@@ -21,7 +21,7 @@
 
 namespace Taocomp\EinvoiceIt;
 
-class ClientOutcome extends AbstractNotice
+class EsitoCommittente extends AbstractNotice
 {
     /**
      * Notice type
@@ -49,7 +49,7 @@ class ClientOutcome extends AbstractNotice
     /**
      * Populate notice values from invoice
      */
-    public function setValuesFromInvoice( Invoice $invoice, $body = 1 )
+    public function setValuesFromInvoice( FatturaElettronica $invoice, $body = 1 )
     {
         $body = $invoice->getBody($body);
         $this->setValue('NumeroFattura', $invoice->getValue(".//DatiGeneraliDocumento/Numero", $body));

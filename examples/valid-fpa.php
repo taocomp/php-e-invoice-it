@@ -19,13 +19,13 @@
  * along with php-e-invoice-it.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use \Taocomp\EinvoiceIt\Invoice;
+use \Taocomp\EinvoiceIt\FatturaElettronica;
 
 try
 {
     require_once(__DIR__ . '/../autoload.php');
 
-    $invoice = new Invoice('FPA12');
+    $invoice = new FatturaElettronica('FPA12');
 
     $invoice->setValue('ProgressivoInvio', 10001);
     $invoice->setValue('CodiceDestinatario', '999999');
