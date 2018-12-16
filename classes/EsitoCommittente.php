@@ -35,6 +35,11 @@ class EsitoCommittente extends AbstractNotice
     const EC02 = 'EC02';
 
     /**
+     * Default destination dir where to save documents
+     */
+    protected static $defaultPrefixPath = null;
+
+    /**
      * Notice elements
      */
     public static $templateArray = array(

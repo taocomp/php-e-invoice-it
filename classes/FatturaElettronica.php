@@ -32,6 +32,11 @@ class FatturaElettronica extends AbstractDocument
     );
 
     /**
+     * Default destination dir where to save documents
+     */
+    protected static $defaultPrefixPath = null;
+
+    /**
      * Invoice elements
      */
     public static $templateArray = array(

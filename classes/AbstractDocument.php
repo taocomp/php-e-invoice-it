@@ -24,33 +24,38 @@ namespace Taocomp\EinvoiceIt;
 abstract class AbstractDocument
 {
     /**
-     * Optional prefix path where to save invoices.
-     */
-    protected static $destinationDir = null;
-
-    /**
      * \DOMDocument object
      */
     protected $dom = null;
 
     /**
+     * Optional prefix path for current object
+     */
+    protected $prefixPath = null;
+
+    /**
      * Get destination dir
      */
-    public static function getDestinationDir()
+    public static function getDefaultPrefixPath()
     {
-        return static::$destinationDir;
+        return static::$defaultPrefixPath;
     }
     
     /**
      * Set destination dir (common prefix path when saving invoices)
      */
-    public static function setDestinationDir( string $dir )
+    public static function setDefaultPrefixPath( string $dir )
     {
+        $dir = realpath($dir);
+
+        if (false === $dir) {
+            throw new \Exception("Cannot access to '$dir'");
+        }
         if (false === is_writeable($dir)) {
             throw new \Exception("Directory '$dir' is not writeable");
         }
 
-        static::$destinationDir = $dir;
+        static::$defaultPrefixPath = $dir;
     }
 
     /**
@@ -178,6 +183,14 @@ abstract class AbstractDocument
     abstract public function getFilename();
 
     /**
+     * Get prefix path for current object
+     */
+    public function getPrefixPath()
+    {
+        return $this->prefixPath;
+    }
+
+    /**
      * Get value
      */
     public function getValue( string $xpath, \DOMNode $contextNode = null )
@@ -221,22 +234,30 @@ abstract class AbstractDocument
 
     /**
      * Save document to file.
-     * If set, prepend static::$destinationDir to path.
+     * If set, prepend static::$defaultPrefixPath to path.
      * Overwrite existing file if $overwrite is true.
      */
     public function save( bool $overwrite = false, bool $normalize = true )
     {
-        $dest = $this->getFilename();
+        $prefixPath = '.';
+        if (null !== $this->prefixPath) {
+            $prefixPath = $this->prefixPath;
+        } else if (null !== static::$defaultPrefixPath) {
+            $prefixPath = static::$defaultPrefixPath;
+        }
+        $prefixPath = realpath($prefixPath);
 
-        if (false === is_string($dest) || empty($dest)) {
-            throw new \Exception("Filename '$dest' empty or invalid");
+        if (false === $prefixPath) {
+            throw new \Exception("Cannot set a valid prefixPath ('$prefixPath')");
         }
         
-        // Prepend destination dir if $dest is not absolute and
-        // static::$destinationDir is valid.
-        if (0 !== strpos($dest, '/') && is_readable(static::$destinationDir)) {
-            $dest = static::$destinationDir . "/$dest";
+        $filename = $this->getFilename();
+
+        if (false === is_string($filename) || empty($filename)) {
+            throw new \Exception("Filename '$filename' empty or invalid");
         }
+
+        $dest = $prefixPath . DIRECTORY_SEPARATOR . $filename;
 
         $className = $this->getClassName();
 
@@ -273,6 +294,23 @@ abstract class AbstractDocument
         }
 
         return $this;
+    }
+
+    /**
+     * Set optional destination dir for current object
+     */
+    public function setPrefixPath( string $dir )
+    {
+        $dir = realpath($dir);
+
+        if (false === $dir) {
+            throw new \Exception("Cannot access to '$dir'");
+        }
+        if (false === is_writeable($dir)) {
+            throw new \Exception("Directory '$dir' is not writeable");
+        }
+
+        $this->prefixPath = $dir;
     }
 
     /**

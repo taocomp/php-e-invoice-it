@@ -101,6 +101,17 @@ $invoice->setValuesAll('DatiGenerali', array(
 #+END_SRC
 
 *** Save invoice
+Set an optional default destination dir for all invoices:
+#+BEGIN_SRC 
+FatturaElettronica::setDefaultPrefixPath('path/to/dir');
+#+END_SRC
+
+Set an optional destination dir for current invoice:
+#+BEGIN_SRC 
+$invoice->setPrefixPath('path/to/another/dir');
+#+END_SRC
+
+Save invoice:
 #+BEGIN_SRC 
 $invoice->save();
 #+END_SRC
