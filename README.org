@@ -26,15 +26,84 @@ $invoice = new Invoice('FPR12');
 #+END_SRC
 
 *** Load an invoice from file
-*** Invoice lot
-*** Line item count
+*** Invoice lot and line items
+Set 2 bodies:
+#+BEGIN_SRC 
+$invoice->setLotSize(2);
+#+END_SRC
+
+Set 3 line items for second body:
+#+BEGIN_SRC 
+$invoice->setLineItemCount(3, 2);
+#+END_SRC
+
 *** Set values
+Set single value:
+#+BEGIN_SRC 
+$invoice->setValue('ProgressivoInvio', 10001);
+#+END_SRC
+
+Set multiple values:
+#+BEGIN_SRC 
+$invoice->setValues('IdTrasmittente', array(
+    'IdCodice' => '09876543210',
+    'IdPaese' => 'IT'
+));
+#+END_SRC
+
+#+BEGIN_SRC 
+$invoice->setValues('CedentePrestatore/Sede', array(
+    'Indirizzo' => 'VIA UNIVERSO 1'
+));
+#+END_SRC
+
+#+BEGIN_SRC 
+$invoice->setValues('CessionarioCommittente', array(
+    // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
+    'DatiAnagrafici/CodiceFiscale' => '01234567890',
+    // Denominazione, somewhere inside CessionarioCommittente
+    './/Denominazione' => 'BETA SRL'
+));
+#+END_SRC
+
+#+BEGIN_SRC 
+// Set values for second body
+$body2 = $invoice->getBody(2);
+$invoice->setValue('.//Numero', 44, $body2);
+$invoice->setValue('.//Data', '2018-12-12', $body2);
+#+END_SRC
+
 *** Save invoice
+#+BEGIN_SRC 
+$invoice->save();
+#+END_SRC
+
 ** Notices
 *** Create a new notice
+#+BEGIN_SRC 
+$notice = new ClientOutcome();
+#+END_SRC
+
 *** Load a notice from file
 *** Set values
+#+BEGIN_SRC 
+// Set some values from invoice, second body:
+$notice->setValuesFromInvoice($invoice, 2);
+
+// Set values
+$notice->setValue('IdentificativoSdI', 1234567);
+$notice->setValue('Esito', ClientOutcome::EC01);
+#+END_SRC
+
 *** Save notice
+#+BEGIN_SRC 
+// Set filename from invoice
+$notice->setFilenameFromInvoice($invoice, '_EC_001');
+
+// Save notice
+$notice->save();
+#+END_SRC
+
 * Credits
 We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.
 
