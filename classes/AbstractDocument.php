@@ -86,6 +86,30 @@ abstract class AbstractDocument
         }
     }
 
+    public function addElement( string $name, $parent, $beforeRef = null )
+    {
+        if (is_string($parent)) {
+            $parent = $this->getElement($parent);
+        } else if (false === $parent instanceOf \DOMNode) {
+            throw new \Exception('Param "parent" is not a DOMNode');
+        }
+
+        $newElement = $this->dom->createElement($name);
+
+        if (null === $beforeRef) {
+            $parent->appendChild($newElement);
+        } else {
+            if (is_string($beforeRef)) {
+                $beforeRef = $this->getElement($beforeRef);
+            } else if (false === $beforeRef instanceOf \DOMNode) {
+                throw new \Exception('Param "beforeRef" is not a DOMNode');
+            }
+            $parent->insertBefore($newElement, $beforeRef);
+        }
+
+        return $this;
+    }
+
     /**
      * Return XML as string
      */
@@ -279,17 +303,17 @@ abstract class AbstractDocument
     /**
      * Change size of a specified element
      */
-    public function setElementSize( string $xpath, int $size, \DOMNode $contextNode = null, \DOMNode $keepLast = null )
+    public function setElementSize( string $xpath, int $size, \DOMNode $contextNode = null, \DOMNode $beforeNode = null )
     {
         $element = $this->getElement($xpath, $contextNode);
         
         for ($i = 2; $i <= $size; $i++) {
             $cloned = $element->cloneNode(true);
 
-            if (null === $keepLast) {
+            if (null === $beforeNode) {
                 $element->parentNode->appendChild($cloned);
             } else {
-                $element->parentNode->insertBefore($cloned, $keepLast);
+                $element->parentNode->insertBefore($cloned, $beforeNode);
             }
         }
 

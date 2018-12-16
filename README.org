@@ -100,6 +100,12 @@ $invoice->setValuesAll('DatiGenerali', array(
 ));
 #+END_SRC
 
+*** Add elements
+#+BEGIN_SRC 
+$invoice->addElement('PECDestinatario', 'DatiTrasmissione');
+$invoice->setValue('PECDestinatario', 'pec@example.com');
+#+END_SRC
+
 *** Save invoice
 Set an optional default destination dir for all invoices:
 #+BEGIN_SRC 
