@@ -3,24 +3,24 @@
 /**
  * Copyright (C) 2018 Taocomp s.r.l.s. <https://taocomp.com>
  *
- * This file is part of php-sdicoop-invoice.
+ * This file is part of php-e-invoice-it.
  *
- * php-sdicoop-invoice is free software: you can redistribute it and/or modify
+ * php-e-invoice-it is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * php-sdicoop-invoice is distributed in the hope that it will be useful,
+ * php-e-invoice-it is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with php-sdicoop-invoice.  If not, see <http://www.gnu.org/licenses/>.
+ * along with php-e-invoice-it.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-use \Taocomp\EinvoiceIt\FatturaElettronica;
-use \Taocomp\EinvoiceIt\NotificaEsitoCommittente;
+use \Taocomp\EinvoiceIt\Invoice;
+use \Taocomp\EinvoiceIt\ClientOutcome;
 
 try
 {
@@ -31,8 +31,8 @@ try
     // --------------------------------------------------------------
 
     // Create a new FPR12 invoice with 2 bodies
-    $invoice = new FatturaElettronica('FPR12');
-    $invoice->setBatchSize(2);
+    $invoice = new Invoice('FPR12');
+    $invoice->setLotSize(2);
     $invoice->setLineItemCount(3, 2);
 
     // Set single value
@@ -63,24 +63,24 @@ try
 
     
     // --------------------------------------------------------------
-    // Notification
+    // Notice
     // --------------------------------------------------------------
 
-    // Create notification
-    $notification = new NotificaEsitoCommittente();
+    // Create notice
+    $notice = new ClientOutcome();
 
     // Set some values from invoice
-    $notification->setValuesFromInvoice($invoice, 2);
+    $notice->setValuesFromInvoice($invoice, 2);
 
     // Set values
-    $notification->setValue('IdentificativoSdI', 1234567);
-    $notification->setValue('Esito', NotificaEsitoCommittente::EC01);
+    $notice->setValue('IdentificativoSdI', 1234567);
+    $notice->setValue('Esito', ClientOutcome::EC01);
 
     // Set filename from invoice
-    $notification->setFilenameFromInvoice($invoice, '_EC_001');
+    $notice->setFilenameFromInvoice($invoice, '_EC_001');
 
-    // Save notification
-    $notification->save();
+    // Save notice
+    $notice->save();
 
 }
 catch (\Exception $e)
