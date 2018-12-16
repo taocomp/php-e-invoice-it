@@ -10,7 +10,7 @@ See [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettron
 - Apache configuration :: [[https://forum.italia.it/t/accreditamento-sdicoop-configurazione-ssl-su-apache/3314][Accreditamento SDICoop: configurazione SSL su Apache - Fatturazione Elettroni...]]
 - Interoperability tests :: [[https://forum.italia.it/t/test-interoperabilita-soluzioni/4370][Test Interoperabilità Soluzioni - Fatturazione Elettronica - Forum Italia]]
 
-If you need a "ready to start" solution, or a consultancy for your PHP project, please feel free to contact us at [[mailto:sdicoop@taocomp.com][sdicoop@taocomp.com]].
+If you need a "ready to start" solution, or a consultancy for your PHP project, please feel free to contact us at [[mailto:e-invoicing@taocomp.com][e-invoicing@taocomp.com]].
 
 * Quickstart
 ** Invoice
