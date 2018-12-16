@@ -116,6 +116,28 @@ Save invoice:
 $invoice->save();
 #+END_SRC
 
+*** Send invoice to SdI
+Setup a ~\Taocomp\Sdicoop\Client~ object (connect to SdIRiceviFile):
+#+BEGIN_SRC 
+use \Taocomp\Sdicoop\Client;
+
+Client::setPrivateKey('/path/to/client.key');
+Client::setClientCert('/path/to/client.pem');
+Client::setCaCert('/path/to/ca.pem');
+
+$client = new Client(array(
+    'endpoint' => 'https://testservizi.fatturapa.it/ricevi_file',
+    'wsdl'     => '/path/to/wsdl/SdIRiceviFile_v1.0.wsdl'
+));
+#+END_SRC
+
+Send invoice:
+#+BEGIN_SRC 
+$fileSdI = new \Taocomp\Sdicoop\FileSdIBase();
+$fileSdI->load($invoice);
+$response = new \Taocomp\Sdicoop\RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
+#+END_SRC
+
 ** Notices
 *** Create a new notice
 NotificaEsitoCommittente:
@@ -141,6 +163,28 @@ $notice->setFilenameFromInvoice($invoice, '_EC_001');
 
 // Save notice
 $notice->save();
+#+END_SRC
+
+*** Send notice to SdI
+Setup a ~\Taocomp\Sdicoop\Client~ object (connect to SdIRiceviNotifica):
+#+BEGIN_SRC 
+use \Taocomp\Sdicoop\Client;
+
+Client::setPrivateKey('/path/to/client.key');
+Client::setClientCert('/path/to/client.pem');
+Client::setCaCert('/path/to/ca.pem');
+
+$client = new Client(array(
+    'endpoint' => 'https://testservizi.fatturapa.it/ricevi_notifica',
+    'wsdl'     => __DIR__ . '/../wsdl/SdIRiceviNotifica_v1.0.wsdl'
+));
+#+END_SRC
+
+Send notice:
+#+BEGIN_SRC 
+$fileSdI = new \Taocomp\Sdicoop\FileSdI();
+$fileSdI->load($notice);
+$response = new \Taocomp\Sdicoop\RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
 #+END_SRC
 
 * Credits
