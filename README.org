@@ -46,7 +46,7 @@ Set single value:
 $invoice->setValue('ProgressivoInvio', 10001);
 #+END_SRC
 
-Set multiple values:
+Set values via-array:
 #+BEGIN_SRC 
 $invoice->setValues('IdTrasmittente', array(
     'IdCodice' => '09876543210',
@@ -76,6 +76,18 @@ $invoice->setValue('.//Numero', 44, $body2);
 $invoice->setValue('.//Data', '2018-12-12', $body2);
 #+END_SRC
 
+Set multiple values at once:
+#+BEGIN_SRC 
+$invoice->setValuesAll('DatiGenerali', array(
+    // All "RiferimentoNumeroLinea" somewhere inside DatiGenerali
+    './/RiferimentoNumeroLinea' => 1,
+    // All "IdDocumento" somewhere inside DatiGenerali
+    './/IdDocumento' => 4455,
+    // All "NumItem" somewhere inside DatiGenerali
+    './/NumItem' => 1
+));
+#+END_SRC
+
 *** Save invoice
 #+BEGIN_SRC 
 $invoice->save();
@@ -83,6 +95,7 @@ $invoice->save();
 
 ** Notices
 *** Create a new notice
+NotificaEsitoCommittente:
 #+BEGIN_SRC 
 $notice = new ClientOutcome();
 #+END_SRC
