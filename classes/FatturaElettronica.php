@@ -242,6 +242,19 @@ class FatturaElettronica extends AbstractDocument
         return $this->getElement("FatturaElettronicaHeader");
     }
 
+    public function load( string $filename, int $options = 0, bool $ignoreVersion = false )
+    {
+        $currentVersion = $this->dom->documentElement->getAttribute('versione');
+        parent::load($filename, $options);
+        $newVersion = $this->dom->documentElement->getAttribute('versione');
+
+        if (true !== $ignoreVersion && $newVersion !== $currentVersion) {
+            throw new \Exception("Invoice $newVersion loaded, but a $currentVersion was created");
+        }
+
+        return $this;
+    }
+
     /**
      * Set number of bodies (invoice lot)
      */

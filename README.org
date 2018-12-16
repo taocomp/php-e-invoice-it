@@ -29,6 +29,18 @@ $invoice = new FatturaElettronica('FPR12');
 #+END_SRC
 
 *** Load an invoice from file
+#+BEGIN_SRC 
+$invoice->load('/path/to/invoice.xml');
+#+END_SRC
+
+Please note that if you create an FPR12 invoice and then load an FPA12 invoice (or viceversa), an exception is thrown.
+
+To force loading:
+#+BEGIN_SRC 
+$ignoreVersion = true;
+$invoice->load('/path/to/invoice.xml', 0, $ignoreVersion);
+#+END_SRC
+
 *** Invoice lot and line items
 Set 2 bodies:
 #+BEGIN_SRC 
