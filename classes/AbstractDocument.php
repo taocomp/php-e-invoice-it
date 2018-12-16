@@ -193,6 +193,8 @@ abstract class AbstractDocument
         if (false === $this->dom->load($filename, $options)) {
             throw new \Exception("Cannot load file '$filename'");
         }
+
+        return $this;
     }
 
     /**
