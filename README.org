@@ -1,4 +1,4 @@
-#+TITLE: PHP Einvoice-IT
+#+TITLE: PHP E-invoice-It
 
 Italian e-invoicing: PHP package for e-invoice and notification management.
 
