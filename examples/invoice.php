@@ -1,11 +1,11 @@
 <?php
 
-use \Taocomp\EinvoiceIt\FatturaElettronica;
-use \Taocomp\EinvoiceIt\EsitoCommittente;
+use \Taocomp\Einvoicing\FatturaElettronica;
+use \Taocomp\Einvoicing\EsitoCommittente;
 
 try
 {
-    require_once(__DIR__ . '/../autoload.php');
+    require_once(__DIR__ . '/../vendor/autoload.php');
 
     // --------------------------------------------------------------
     // Invoice

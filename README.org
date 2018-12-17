@@ -28,17 +28,9 @@ Create a new FPR12 invoice:
 $invoice = new FatturaElettronica('FPR12');
 #+END_SRC
 
-*** Load an invoice from file
+Create a new invoice from file
 #+BEGIN_SRC 
-$invoice->load('/path/to/invoice.xml');
-#+END_SRC
-
-Please note that if you create an FPR12 invoice and then load an FPA12 invoice (or viceversa), an exception is thrown.
-
-To force loading:
-#+BEGIN_SRC 
-$ignoreVersion = true;
-$invoice->load('/path/to/invoice.xml', 0, $ignoreVersion);
+$invoice = new FatturaElettronica('/path/to/invoice.xml');
 #+END_SRC
 
 *** Invoice lot and line items
@@ -192,6 +184,10 @@ $fileSdI = new \Taocomp\Sdicoop\FileSdI();
 $fileSdI->load($notice);
 $response = new \Taocomp\Sdicoop\RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
 #+END_SRC
+
+* Tests
+From inside the project root dir:
+~./vendor/bin/phpunit --testdox tests~
 
 * Credits
 We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.

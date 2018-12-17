@@ -1,6 +1,6 @@
 <?php
 
-use \Taocomp\EinvoiceIt\FatturaElettronica;
+use \Taocomp\Einvoicing\FatturaElettronica;
 use \Taocomp\Sdicoop\Client;
 
 try
@@ -8,7 +8,7 @@ try
     // Path to php-sdicoop-client
     define('CLIENT_DIR', __DIR__ . '/../../php-sdicoop-client');
     
-    require_once(__DIR__ . '/../autoload.php');
+    require_once(__DIR__ . '/../vendor/autoload.php');
     require_once(CLIENT_DIR . '/autoload.php');
 
     // Create a new invoice
