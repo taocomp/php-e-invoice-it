@@ -17,8 +17,8 @@ try
     $invoice->setValues('CedentePrestatore', array(
         'IdPaese' => 'IT',
         'IdCodice' => '02313821007',
-        './/Denominazione' => 'CEDENTE SRL',
-        './/RegimeFiscale' => 'RF19',
+        'Denominazione' => 'CEDENTE SRL',
+        'RegimeFiscale' => 'RF19',
     ));
     $invoice->setValues('CedentePrestatore/Sede', array(
         'Indirizzo' => 'VIA UNIVERSO 1',
