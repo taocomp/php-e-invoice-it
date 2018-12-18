@@ -125,9 +125,11 @@ $invoice->save();
 #+END_SRC
 
 *** Send invoice to SdI
-Setup a ~\Taocomp\Sdicoop\Client~ object (connect to SdIRiceviFile):
+Setup a ~\Taocomp\Sdicoop\Client~ object (for connecting to webservice SdIRiceviFile):
 #+BEGIN_SRC 
-use \Taocomp\Sdicoop\Client;
+use \Taocomp\Einvoicing\Sdicoop\Client;
+use \Taocomp\Einvoicing\Sdicoop\FileSdIBase;
+use \Taocomp\Einvoicing\Sdicoop\RispostaSdIRiceviFile;
 
 Client::setPrivateKey('/path/to/client.key');
 Client::setClientCert('/path/to/client.pem');
@@ -141,9 +143,9 @@ $client = new Client(array(
 
 Send invoice:
 #+BEGIN_SRC 
-$fileSdI = new \Taocomp\Sdicoop\FileSdIBase();
+$fileSdI = new FileSdIBase();
 $fileSdI->load($invoice);
-$response = new \Taocomp\Sdicoop\RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
+$response = new RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
 #+END_SRC
 
 ** Notices
@@ -174,9 +176,11 @@ $notice->save();
 #+END_SRC
 
 *** Send notice to SdI
-Setup a ~\Taocomp\Sdicoop\Client~ object (connect to SdIRiceviNotifica):
+Setup a ~\Taocomp\Sdicoop\Client~ object (for connecting to webservice SdIRiceviNotifica):
 #+BEGIN_SRC 
-use \Taocomp\Sdicoop\Client;
+use \Taocomp\Einvoicing\Sdicoop\Client;
+use \Taocomp\Einvoicing\Sdicoop\FileSdI;
+use \Taocomp\Einvoicing\Sdicoop\RispostaSdINotificaEsito;
 
 Client::setPrivateKey('/path/to/client.key');
 Client::setClientCert('/path/to/client.pem');
@@ -190,9 +194,9 @@ $client = new Client(array(
 
 Send notice:
 #+BEGIN_SRC 
-$fileSdI = new \Taocomp\Sdicoop\FileSdI();
+$fileSdI = new FileSdI();
 $fileSdI->load($notice);
-$response = new \Taocomp\Sdicoop\RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
+$response = new RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
 #+END_SRC
 
 * Tests
