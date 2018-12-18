@@ -1,7 +1,7 @@
 <?php
 
 use \Taocomp\Einvoicing\FatturaElettronica;
-use \Taocomp\Sdicoop\Client;
+use \Taocomp\Einvoicing\Sdicoop\Client;
 
 try
 {
@@ -30,9 +30,9 @@ try
     ));
 
     // Send invoice
-    $fileSdI = new \Taocomp\Sdicoop\FileSdIBase();
+    $fileSdI = new \Taocomp\Einvoicing\Sdicoop\FileSdIBase();
     $fileSdI->load($invoice);
-    $response = new \Taocomp\Sdicoop\RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
+    $response = new \Taocomp\Einvoicing\Sdicoop\RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
 }
 catch (\Exception $e)
 {
