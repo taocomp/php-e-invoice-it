@@ -1,4 +1,9 @@
 {
+    "name": "taocomp/php-e-invoice-it",
+    "description": "A PHP package for managing italian e-invoice and notice XML formats",
+    "require": {
+        "php": "^7.2"
+    },
     "autoload": {
         "psr-4": {"Taocomp\\Einvoicing\\": "src/"}
     },
