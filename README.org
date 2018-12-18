@@ -19,7 +19,7 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 
 ** Installation
 *** Composer
-~composer require taocomp/php-e-invoice-it ^0.1~
+~composer require taocomp/php-e-invoice-it~
 
 *** Manually
 - Clone/download the repository
