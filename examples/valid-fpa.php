@@ -15,8 +15,8 @@ try
         'IdPaese' => 'IT'
     ));
     $invoice->setValues('CedentePrestatore', array(
-        './/IdPaese' => 'IT',
-        './/IdCodice' => '02313821007',
+        'IdPaese' => 'IT',
+        'IdCodice' => '02313821007',
         './/Denominazione' => 'CEDENTE SRL',
         './/RegimeFiscale' => 'RF19',
     ));
@@ -28,8 +28,8 @@ try
         'Nazione' => 'IT'
     ));
     $invoice->setValues('CessionarioCommittente', array(
-        './/CodiceFiscale' => '02313821007',
-        './/Denominazione' => 'AMMINISTRAZIONE',
+        'CodiceFiscale' => '02313821007',
+        'Denominazione' => 'AMMINISTRAZIONE',
     ));
     $invoice->setValues('CessionarioCommittente/Sede', array(
         'Indirizzo' => 'VIALE MONDO 99',
@@ -44,34 +44,34 @@ try
         'Data' => '2018-12-12',
         'Numero' => 99999
     ));
-    $invoice->setValuesAll('DatiGenerali', array(
-        './/RiferimentoNumeroLinea' => 1,
-        './/IdDocumento' => 4455,
-        './/NumItem' => 1
+    $invoice->setValuesToAll('DatiGenerali', array(
+        'RiferimentoNumeroLinea' => 1,
+        'IdDocumento' => 4455,
+        'NumItem' => 1
     ));
     $invoice->setValues('DatiTrasporto', array(
-        './/IdPaese' => 'IT',
-        './/IdCodice' => '11223344556',
-        './/Denominazione' => 'TRASPORTO SRLS',
-        './/DataOraConsegna' => '2017-01-10T16:46:12.000+02:00'
+        'IdPaese' => 'IT',
+        'IdCodice' => '11223344556',
+        'Denominazione' => 'TRASPORTO SRLS',
+        'DataOraConsegna' => '2017-01-10T16:46:12.000+02:00'
     ));
     $invoice->setValues('DatiBeniServizi', array(
-        './/NumeroLinea' => 1,
-        './/Descrizione' => 'Description',
-        './/Quantita' => '10.00',
-        './/PrezzoUnitario' => '5.00',
-        './/PrezzoTotale' => '50.00',
-        './/DettaglioLinee/AliquotaIVA' => '22.00',
-        './/DatiRiepilogo/AliquotaIVA' => '22.00',
-        './/ImponibileImporto' => '50.00',
-        './/Imposta' => '11.00',
-        './/EsigibilitaIVA' => 'D'
+        'NumeroLinea' => 1,
+        'Descrizione' => 'Description',
+        'Quantita' => '10.00',
+        'PrezzoUnitario' => '5.00',
+        'PrezzoTotale' => '50.00',
+        'DettaglioLinee/AliquotaIVA' => '22.00',
+        'DatiRiepilogo/AliquotaIVA' => '22.00',
+        'ImponibileImporto' => '50.00',
+        'Imposta' => '11.00',
+        'EsigibilitaIVA' => 'D'
     ));
     $invoice->setValues('DatiPagamento', array(
-        './/CondizioniPagamento' => 'TP01',
-        './/ModalitaPagamento' => 'MP01',
-        './/DataScadenzaPagamento' => '2018-12-31',
-        './/ImportoPagamento' => '61.00'
+        'CondizioniPagamento' => 'TP01',
+        'ModalitaPagamento' => 'MP01',
+        'DataScadenzaPagamento' => '2018-12-31',
+        'ImportoPagamento' => '61.00'
     ));
 
     $invoice->save(true);

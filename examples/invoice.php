@@ -13,8 +13,8 @@ try
 
     // Create a new FPR12 invoice with 2 bodies
     $invoice = new FatturaElettronica('FPR12');
-    $invoice->setLotSize(2);
-    $invoice->setLineItemCount(3, 2);
+    $invoice->addBody(2);
+    $invoice->addLineItem(3, 2);
 
     // Set single value
     $invoice->setValue('ProgressivoInvio', random_int(20000,99999));
@@ -31,7 +31,7 @@ try
         // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
         'DatiAnagrafici/CodiceFiscale' => '01234567890',
         // Denominazione, somewhere inside CessionarioCommittente
-        './/Denominazione' => 'BETA SRL'
+        'Denominazione' => 'BETA SRL'
     ));
 
     // Add element
@@ -40,8 +40,8 @@ try
 
     // Set values for second body
     $body2 = $invoice->getBody(2);
-    $invoice->setValue('.//Numero', 44, $body2);
-    $invoice->setValue('.//Data', '2018-12-12', $body2);
+    $invoice->setValue('Numero', 44, $body2);
+    $invoice->setValue('Data', '2018-12-12', $body2);
 
     // Save invoice
     $invoice->save();
@@ -54,7 +54,7 @@ try
     // Create notice
     $notice = new EsitoCommittente();
 
-    // Set some values from invoice
+    // Set some values from invoice, second body
     $notice->setValuesFromInvoice($invoice, 2);
 
     // Set values

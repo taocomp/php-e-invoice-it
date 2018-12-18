@@ -14,7 +14,8 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 
 * Quickstart
 ** Dependencies
-~php-xml~.
+- ~php-xml~
+- tested for PHP 7+, should work on PHP 5.5+ too
 
 ** Invoice
 *** Create a new invoice
@@ -32,16 +33,25 @@ Create a new invoice from file
 #+BEGIN_SRC 
 $invoice = new FatturaElettronica('/path/to/invoice.xml');
 #+END_SRC
-
-*** Invoice lot and line items
-Set 2 bodies:
+*** Create a custom template invoice to be used later
 #+BEGIN_SRC 
-$invoice->setLotSize(2);
+$prefixPath = __DIR__ . '/tmpfiles';
+$filename = 'my-custom-template.xml';
+$invoice = new FatturaElettronica('FPR12');
+$invoice->setValue('IdTrasmittente/IdCodice', '00011122233');
+$invoice->setValue('IdTrasmittente/IdPaese', 'IT');
+$invoice->setFilename($filename);
+$invoice->setPrefixPath($prefixPath)->save();
+#+END_SRC
+*** Invoice lot and line items
+Add 2 bodies:
+#+BEGIN_SRC 
+$invoice->addBody(2);
 #+END_SRC
 
-Set 3 line items for second body:
+Add 3 line items to second body:
 #+BEGIN_SRC 
-$invoice->setLineItemCount(3, 2);
+$invoice->addLineItem(3, 2);
 #+END_SRC
 
 *** Set values
@@ -69,26 +79,26 @@ $invoice->setValues('CessionarioCommittente', array(
     // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
     'DatiAnagrafici/CodiceFiscale' => '01234567890',
     // Denominazione, somewhere inside CessionarioCommittente
-    './/Denominazione' => 'BETA SRL'
+    'Denominazione' => 'BETA SRL'
 ));
 #+END_SRC
 
 #+BEGIN_SRC 
 // Set values for second body
 $body2 = $invoice->getBody(2);
-$invoice->setValue('.//Numero', 44, $body2);
-$invoice->setValue('.//Data', '2018-12-12', $body2);
+$invoice->setValue('Numero', 44, $body2);
+$invoice->setValue('Data', '2018-12-12', $body2);
 #+END_SRC
 
 Set multiple values at once:
 #+BEGIN_SRC 
-$invoice->setValuesAll('DatiGenerali', array(
+$invoice->setValuesToAll('DatiGenerali', array(
     // All "RiferimentoNumeroLinea" somewhere inside DatiGenerali
-    './/RiferimentoNumeroLinea' => 1,
+    'RiferimentoNumeroLinea' => 1,
     // All "IdDocumento" somewhere inside DatiGenerali
-    './/IdDocumento' => 4455,
+    'IdDocumento' => 4455,
     // All "NumItem" somewhere inside DatiGenerali
-    './/NumItem' => 1
+    'NumItem' => 1
 ));
 #+END_SRC
 

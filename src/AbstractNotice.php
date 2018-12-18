@@ -24,54 +24,30 @@ namespace Taocomp\Einvoicing;
 abstract class AbstractNotice extends AbstractDocument
 {
     /**
-     * Filename
+     * Constants for root notice element
      */
-    protected $filename = null;
+    const ROOT_TAG_PREFIX = 'types';
+    const ROOT_NAMESPACE  = 'http://www.fatturapa.gov.it/sdi/messaggi/v1.0';
+    const SCHEMA_LOCATION = 'http://www.fatturapa.gov.it/sdi/messaggi/v1.0 MessaggiTypes_v1.0.xsd ';
 
     /**
-     * Create root element
+     * Default destination dir where to save documents
      */
-    protected function createRootElement()
-    {
-        $fragment = $this->dom->createDocumentFragment();
-        $fragment->appendXML('<?xml-stylesheet type="text/xsl" href="EC_v1.0.xsl"?>');
-        $this->dom->appendChild($fragment);
-
-        $root = $this->dom->createElementNS(
-            'http://www.fatturapa.gov.it/sdi/messaggi/v1.0',
-            "types:" . static::TYPE);
-        $root->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:ds',
-            'http://www.w3.org/2000/09/xmldsig#');
-        $root->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:xsi',
-            'http://www.w3.org/2001/XMLSchema-instance');
-        $root->setAttribute('versione', '1.0');
-        $root->setAttributeNS(
-            'http://www.w3.org/2001/XMLSchema-instance',
-            'schemaLocation',
-            'http://www.fatturapa.gov.it/sdi/messaggi/v1.0 MessaggiTypes_v1.0.xsd ');
-
-        return $root;
-    }
+    protected static $defaultPrefixPath = null;
 
     /**
-     * Get filename
+     * Constructor
      */
-    public function getFilename()
+    public function __construct( $file = null )
     {
-        return $this->filename;
-    }
-    
-    /**
-     * Set filename
-     */
-    public function setFilename( string $filename )
-    {
-        $this->filename = $filename;
-        return $this;
+        parent::__construct($file);
+
+        if (null === $file) {
+            $fragment = $this->dom->createDocumentFragment();
+            $fragment->appendXML('<?xml-stylesheet type="text/xsl" href="EC_v1.0.xsl"?>');
+            $this->dom->insertBefore($fragment, $this->dom->documentElement);
+            $this->dom->documentElement->setAttribute('versione', '1.0');
+        }
     }
 
     public function setFilenameFromInvoice( FatturaElettronica $invoice, string $suffix )

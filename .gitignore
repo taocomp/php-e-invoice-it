@@ -1,2 +1,3 @@
 examples/*.xml
-
+tests/tmpfiles/*
+!tests/tmpfiles/.gitkeep

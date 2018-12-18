@@ -24,12 +24,19 @@ namespace Taocomp\Einvoicing;
 class FatturaElettronica extends AbstractDocument
 {
     /**
+     * Constants for root element ("FatturaElettronica")
+     */
+    const ROOT_TAG_PREFIX = 'p';
+    const ROOT_TAG_NAME   = 'FatturaElettronica';
+    const ROOT_NAMESPACE  = 'http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2';
+    const SCHEMA_LOCATION = 'http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2 '
+                          . 'http://www.fatturapa.gov.it/export/fatturazione/sdi/fatturapa'
+                          . '/v1.2/Schema_del_file_xml_FatturaPA_versione_1.2.xsd';
+
+    /**
      * Invoice formats
      */
-    protected static $allowedFormats = array(
-        'FPA12',
-        'FPR12'
-    );
+    protected static $allowedFormats = array('FPA12', 'FPR12');
 
     /**
      * Default destination dir where to save documents
@@ -181,58 +188,26 @@ class FatturaElettronica extends AbstractDocument
     }
 
     /**
-     * Create root element "FatturaElettronica"
-     */
-    protected function createRootElement()
-    {
-        $schemaLocation = 'http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2 '
-                        . 'http://www.fatturapa.gov.it/export/fatturazione/sdi/fatturapa'
-                        . '/v1.2/Schema_del_file_xml_FatturaPA_versione_1.2.xsd';
-
-        $root = $this->dom->createElementNS(
-            'http://ivaservizi.agenziaentrate.gov.it/docs/xsd/fatture/v1.2',
-            'p:FatturaElettronica');
-        $root->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:ds',
-            'http://www.w3.org/2000/09/xmldsig#');
-        $root->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:xsi',
-            'http://www.w3.org/2001/XMLSchema-instance');
-        $root->setAttributeNS(
-            'http://www.w3.org/2001/XMLSchema-instance',
-            'schemaLocation',
-            $schemaLocation);
-
-        return $root;
-    }
-
-    /**
-     * Return nth body element.
-     * Xpath expressions allowed: "last()", "last()-1", ...
-     */
-    public function getBody( $i = 1 )
-    {
-        return $this->getElement("FatturaElettronicaBody[$i]");
-    }
-
-    /**
      * Retrieve invoice filename from current element values
+     * if $this->filename is not set
      */
     public function getFilename()
     {
+        if (null !== $this->filename) {
+            return $this->filename;
+        }
+
         $progressivoInvio = $this->getValue('ProgressivoInvio');
         $codice = $this->getValue('IdTrasmittente/IdCodice');
         $paese = $this->getValue('IdTrasmittente/IdPaese');
 
-        if (!$progressivoInvio) {
+        if (empty($progressivoInvio)) {
             throw new \Exception(__FUNCTION__ . ': ProgressivoInvio is empty');
         }
-        if (!$paese) {
+        if (empty($paese)) {
             throw new \Exception(__FUNCTION__ . ': IdPaese is empty');
         }
-        if (!$codice) {
+        if (empty($codice)) {
             throw new \Exception(__FUNCTION__ . ': IdCodice is empty');
         }
 
@@ -240,49 +215,52 @@ class FatturaElettronica extends AbstractDocument
     }
 
     /**
-     * Return header.
+     * Add body (invoice lot)
      */
-    public function getHeader()
+    public function addBody( int $n = 1 )
     {
-        return $this->getElement("FatturaElettronicaHeader");
-    }
-
-    /**
-     * Set number of bodies (invoice lot)
-     */
-    public function setLotSize( int $size )
-    {
-        if ($size < 1) {
-            throw new \Exception("Invalid lot size '$size'");
+        if ($n < 1) {
+            return $this;
         }
 
-        if ($size > 1) {
-            $this->setElementSize('FatturaElettronicaBody', $size);
+        $body = $this->getBody();
+        
+        for ($i = 0; $i < $n; $i++) {
+            $this->addElement($body->cloneNode(true), '/');
         }
 
         return $this;
     }
 
     /**
-     * Set line item count
+     * Get body
      */
-    public function setLineItemCount( int $lines, int $bodyIndex = 1 )
+    public function getBody( int $bodyIndex = 1 )
     {
-        if ($lines < 1) {
-            throw new \Exception("Invalid line item count '$lines'");
+        return $this->getElement("FatturaElettronicaBody[$bodyIndex]");
+    }
+
+    /**
+     * Add line item
+     */
+    public function addLineItem( int $n, int $bodyIndex = 1 )
+    {
+        if ($n < 1) {
+            return $this;
         }
 
         if ($bodyIndex < 1) {
             throw new \Exception("Invalid body index '$bodyIndex'");
         }
 
-        if ($lines === 1) {
-            return $this;
-        }
-
         $body = $this->getBody($bodyIndex);
-        $datiRiepilogo = $this->getElement('.//DatiRiepilogo', $body);
-        $this->setElementSize('.//DettaglioLinee', $lines, $body, $datiRiepilogo);
+        $line = $this->getElement('DettaglioLinee', $body);
+        $parent = $this->getElement('DatiBeniServizi', $body);
+        $beforeRef = $this->getElement('DatiRiepilogo', $body);
+
+        for ($i = 0; $i < $n; $i++) {
+            $this->addElement($line->cloneNode(true), $parent, $beforeRef);
+        }
 
         return $this;
     }

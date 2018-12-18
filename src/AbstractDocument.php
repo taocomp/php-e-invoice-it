@@ -24,14 +24,164 @@ namespace Taocomp\Einvoicing;
 abstract class AbstractDocument
 {
     /**
-     * \DOMDocument object
+     * DOMDocument object
      */
     protected $dom = null;
 
     /**
-     * Optional prefix path for current object
+     * Filename
+     */
+    protected $filename = null;
+
+    /**
+     * Optional prefix path where to save this document
      */
     protected $prefixPath = null;
+
+    /**
+     * Constructor
+     */
+    public function __construct( $file = null )
+    {
+        $this->dom = new \DOMDocument('1.0', 'UTF-8');
+        $this->dom->formatOutput = true;
+
+        if (null === $file) {
+            $root = $this->dom->createElementNS(
+                static::ROOT_NAMESPACE,
+                static::ROOT_TAG_PREFIX . ':' . static::ROOT_TAG_NAME);
+            $root->setAttributeNS(
+                'http://www.w3.org/2000/xmlns/',
+                'xmlns:ds',
+                'http://www.w3.org/2000/09/xmldsig#');
+            $root->setAttributeNS(
+                'http://www.w3.org/2000/xmlns/',
+                'xmlns:xsi',
+                'http://www.w3.org/2001/XMLSchema-instance');
+            $root->setAttributeNS(
+                'http://www.w3.org/2001/XMLSchema-instance',
+                'schemaLocation',
+                static::SCHEMA_LOCATION);
+
+            if (false === is_a($root, '\DOMElement')) {
+                throw new \Exception('Method createRootElement must return a \DOMElement');
+            }
+
+            if (false === is_array(static::$templateArray)) {
+                throw new \Exception('static templateArray must be an array');
+            }
+
+            $this->createElementsFromArray($root, static::$templateArray);
+            $this->dom->appendChild($root);
+        } else if (is_readable($file)) {
+            $this->load($file);
+        } else {
+            throw new \Exception("File '$file' not found or not readable");
+        }
+    }
+    
+    /**
+     * Returns document class name
+     *
+     * @return string
+     */
+    protected function getClassName()
+    {
+        $classArray = explode('\\', get_class($this));
+        return array_pop($classArray);
+    }
+
+    /**
+     * DOMDOCUMENT, DOMXPATH, XML
+     ***************************************************************************
+     */
+
+    /**
+     * Returns the document as XML
+     */
+    public function asXML( bool $normalize = false )
+    {
+        if (true === $normalize) {
+            $this->normalize();
+        }
+
+        return $this->dom->saveXML(null, LIBXML_NOEMPTYTAG);
+    }
+
+    /**
+     * Returns the DOMDocument object
+     *
+     * @return \DOMDocument
+     */
+    public function getDOM()
+    {
+        return $this->dom;
+    }
+
+    /**
+     * Removes empty elements
+     */
+    public function normalize()
+    {
+        foreach( $this->query('//*[not(node())]') as $node ) {
+            $node->parentNode->removeChild($node);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Query for elements.
+     *
+     * - Absolute paths: omit root element (for example p:FatturaElettronica)
+     * - Tags are prefixed with "//"
+     * - Relative paths are prefixed with "(.)//"
+     *
+     * $context can be a string or a \DOMNode
+     *
+     * @return \DOMNodeList
+     */
+    public function query( string $expr, $context = null, bool $registerNodeNS = true )
+    {
+        $strpos = strpos($expr, '/');
+        
+        if (false === $strpos) {
+            $expr = "//$expr";
+            
+            if (null !== $context) {
+                $expr = ".$expr";
+            }
+        } else if ($strpos === 0) {
+            // Absolute path cannot have a context
+            if (null !== $context) {
+                throw new \Exception("Cannot specify a context with an absolute path ($expr)");
+            }
+
+            if ($expr === '/') {
+                $expr = '';
+            }
+
+            $expr = '/' . static::ROOT_TAG_PREFIX . ':' . static::ROOT_TAG_NAME . $expr;
+        } else if ($strpos > 1) {
+            $expr = "//$expr";
+
+            if (null !== $context) {
+                $expr = ".$expr";
+            }
+        }
+
+        if (null !== $context) {
+            $context = $this->getElement($context);
+        }
+
+        $xpath = new \DOMXpath($this->dom);
+        return $xpath->query($expr, $context, $registerNodeNS);
+    }
+
+    /**
+     * FILENAME, PATH, LOAD/SAVE FILE
+     ***************************************************************************
+     */
 
     /**
      * Get destination dir
@@ -41,6 +191,23 @@ abstract class AbstractDocument
         return static::$defaultPrefixPath;
     }
     
+    /**
+     * Get filename
+     */
+    public function getFilename()
+    {
+        return $this->filename;
+    }
+    
+    /**
+     * Set filename
+     */
+    public function setFilename( string $filename )
+    {
+        $this->filename = $filename;
+        return $this;
+    }
+
     /**
      * Set destination dir (common prefix path when saving invoices)
      */
@@ -59,167 +226,11 @@ abstract class AbstractDocument
     }
 
     /**
-     * Constructor
-     */
-    public function __construct( $file = null )
-    {
-        $this->dom = new \DOMDocument('1.0', 'UTF-8');
-        $this->dom->formatOutput = true;
-
-        if (null === $file) {
-            $root = $this->createRootElement();
-
-            if (false === is_a($root, '\DOMElement')) {
-                throw new \Exception('Method createRootElement must return a \DOMElement');
-            }
-
-            if (false === is_array(static::$templateArray)) {
-                throw new \Exception('static templateArray must be an array');
-            }
-
-            $this->createElementsFromArray($root, static::$templateArray);
-            $this->dom->appendChild($root);
-        } else if (is_readable($file)) {
-            $this->load($file);
-        } else {
-            throw new \Exception("File '$file' not found or not readable");
-        }
-    }
-
-    public function addElement( string $name, $parent, $beforeRef = null )
-    {
-        if (is_string($parent)) {
-            $parent = $this->getElement($parent);
-        } else if (false === $parent instanceOf \DOMNode) {
-            throw new \Exception('Param "parent" is not a DOMNode');
-        }
-
-        $newElement = $this->dom->createElement($name);
-
-        if (null === $beforeRef) {
-            $parent->appendChild($newElement);
-        } else {
-            if (is_string($beforeRef)) {
-                $beforeRef = $this->getElement($beforeRef);
-            } else if (false === $beforeRef instanceOf \DOMNode) {
-                throw new \Exception('Param "beforeRef" is not a DOMNode');
-            }
-            $parent->insertBefore($newElement, $beforeRef);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Return XML as string
-     */
-    public function asXML( bool $normalize = false )
-    {
-        if (true === $normalize) {
-            $this->normalize();
-        }
-
-        return $this->dom->saveXML(null, LIBXML_NOEMPTYTAG);
-    }
-
-    /**
-     * Recursively adds elements from array
-     */
-    protected function createElementsFromArray( \DOMElement $parent, array $array )
-    {
-        foreach ($array as $k => $v) {
-            if (true === is_array($v)) {
-                $node = $this->dom->createElement($k);
-                $this->createElementsFromArray($node, $v);
-            } else {
-                $node = $this->dom->createElement($k, $v);
-            }
-            $parent->appendChild($node);
-        }
-    }
-
-    /**
-     * Create and return the root element
-     */
-    abstract protected function createRootElement();
-    
-    /**
-     * Get class name
-     */
-    protected function getClassName()
-    {
-        $classArray = explode('\\', get_class($this));
-        return array_pop($classArray);
-    }
-
-    /**
-     * Returns \DOMDocument object
-     */
-    public function getDOM()
-    {
-        return $this->dom;
-    }
-
-    /**
-     * Get an element by xpath, if the xpath returns only one element.
-     * The xpath can be relative to a $contextNode.
-     *
-     * Throws an exception if result element count != 1.
-     */
-    public function getElement( string $xpath, \DOMNode $contextNode = null )
-    {
-        $elements = $this->getElements($xpath, $contextNode);
-        $count = $elements->count();
-
-        if ($count !== 1) {
-            $msg = null !== $contextNode
-                 ? "Element '$xpath' (relative to {$contextNode->nodeName})"
-                 : "Element '$xpath'";
-
-            if ($count > 1) {
-                throw new \Exception("$msg is not unique");
-            } else if ($count === 0) {
-                throw new \Exception("$msg not found");
-            }
-        }
-
-        return $elements[0];
-    }
-
-    /**
-     * Get an element by xpath.
-     * The xpath can be relative to a $contextNode.
-     */
-    public function getElements( string $xpath, \DOMNode $contextNode = null )
-    {
-        $strpos = strpos($xpath, '/');
-        
-        if ((false === $strpos || $strpos > 1) && null === $contextNode) {
-            $xpath = "//$xpath";
-        }
-
-        return $this->query($xpath, $contextNode);
-    }
-
-    /**
-     * Get filename
-     */
-    abstract public function getFilename();
-
-    /**
      * Get prefix path for current object
      */
     public function getPrefixPath()
     {
         return $this->prefixPath;
-    }
-
-    /**
-     * Get value
-     */
-    public function getValue( string $xpath, \DOMNode $contextNode = null )
-    {
-        return $this->getElement($xpath, $contextNode)->nodeValue;
     }
 
     /**
@@ -232,28 +243,6 @@ abstract class AbstractDocument
         }
 
         return $this;
-    }
-
-    /**
-     * Remove empty elements.
-     */
-    public function normalize()
-    {
-        foreach( $this->query('//*[not(node())]') as $node ) {
-            $node->parentNode->removeChild($node);
-        }
-
-        return $this;
-    }
-
-    /**
-     * Query via-xpath.
-     * Returns a \DOMNodeList.
-     */
-    public function query( string $expr, \DOMNode $contextNode = null, bool $registerNodeNS = true )
-    {
-        $xpath = new \DOMXpath($this->dom);
-        return $xpath->query($expr, $contextNode, $registerNodeNS);
     }
 
     /**
@@ -301,26 +290,6 @@ abstract class AbstractDocument
     }
 
     /**
-     * Change size of a specified element
-     */
-    public function setElementSize( string $xpath, int $size, \DOMNode $contextNode = null, \DOMNode $beforeNode = null )
-    {
-        $element = $this->getElement($xpath, $contextNode);
-        
-        for ($i = 2; $i <= $size; $i++) {
-            $cloned = $element->cloneNode(true);
-
-            if (null === $beforeNode) {
-                $element->parentNode->appendChild($cloned);
-            } else {
-                $element->parentNode->insertBefore($cloned, $beforeNode);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Set optional destination dir for current object
      */
     public function setPrefixPath( string $dir )
@@ -335,15 +304,111 @@ abstract class AbstractDocument
         }
 
         $this->prefixPath = $dir;
+
+        return $this;
+    }
+
+    /**
+     * ELEMENTS
+     ***************************************************************************
+     */
+
+    /**
+     * Add an element
+     */
+    public function addElement( $element, $parent, $beforeRef = null )
+    {
+        $parent = $this->getElement($parent);
+
+        if (is_string($element)) {
+            $element = $this->dom->createElement($element);
+        } else if (false === $element instanceOf \DOMNode) {
+            throw new \Exception('Invalid $element parameter');
+        }
+
+        if (null === $beforeRef) {
+            $parent->appendChild($element);
+        } else {
+            $beforeRef = $this->getElement($beforeRef);
+            $parent->insertBefore($element, $beforeRef);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Recursively adds elements from array
+     */
+    protected function createElementsFromArray( \DOMElement $parent, array $array )
+    {
+        foreach ($array as $k => $v) {
+            if (true === is_array($v)) {
+                $node = $this->dom->createElement($k);
+                $this->createElementsFromArray($node, $v);
+            } else {
+                $node = $this->dom->createElement($k, $v);
+            }
+            $parent->appendChild($node);
+        }
+    }
+
+    /**
+     * Query document for specified element.
+     *
+     * Throws an exception if query returns 0 or N>1 elements.
+     */
+    public function getElement( $expr, $context = null )
+    {
+        if ($expr instanceOf \DOMNode) {
+            return $expr;
+        } else if (false === is_string($expr)) {
+            throw new \Exception('Invalid param $expr');
+        }
+
+        if (null !== $context) {
+            $context = $this->getElement($context);
+        }
+        
+        $elements = $this->query($expr, $context);
+        $count = $elements->count();
+
+        if ($count !== 1) {
+            $errSuffix = null === $context ? "" : " (context: {$context->nodeName})";
+        }
+
+        if ($count > 1) {
+            $nodeValues = 'values:';
+            foreach ($elements as $element) {
+                $nodeValues .= " {$element->nodeName}:{$element->nodeValue},";
+            }
+            throw new \Exception("Element '$expr' returns $count elements ($nodeValues)$errSuffix");
+        } else if ($count === 0) {
+            throw new \Exception("Element not found ($expr)$errSuffix");
+        }
+
+        return $elements->item(0);
+    }
+
+    /**
+     * VALUES
+     ***************************************************************************
+     */
+
+    /**
+     * Get value
+     */
+    public function getValue( string $expr, $context = null )
+    {
+        return $this->getElement($expr, $context)->nodeValue;
     }
 
     /**
      * Set value for a given element, if the element is unique (by tag or xpath).
      * Throws an exception otherwise.
      */
-    public function setValue( string $expr, $value, \DOMNode $contextNode = null )
+    public function setValue( string $expr, $value, $context = null )
     {
-        $this->getElement($expr, $contextNode)->nodeValue = $value;
+        $this->getElement($expr, $context)->nodeValue = $value;
 
         return $this;
     }
@@ -351,9 +416,9 @@ abstract class AbstractDocument
     /**
      * Set same value $value to all elements retrieved through $expr
      */
-    public function setValueAll( string $expr, $value, \DOMNode $contextNode = null )
+    public function setValueToAll( string $expr, $value, string $context = null )
     {
-        $elements = $this->getElements($expr, $contextNode);
+        $elements = $this->query($expr, $context);
 
         foreach ($elements as $element) {
             $element->nodeValue = $value;
@@ -364,16 +429,10 @@ abstract class AbstractDocument
 
     /**
      * Set values from an associative array. Keys must return just one element.
-     * Array keys are relative to node $context (or retrieved through context expression).
+     * Array keys are relative to $context.
      */
-    public function setValues( $context, array $array )
+    public function setValues( string $context, array $array )
     {
-        if (is_string($context)) {
-            $context = $this->getElement($context);
-        } else if (false === is_a($context, \DOMNode)) {
-            throw new \Exception('Invalid context');
-        }
-        
         foreach ($array as $k => $v) {
             $this->setValue($k, $v, $context);
         }
@@ -383,18 +442,12 @@ abstract class AbstractDocument
 
     /**
      * Set values from an associative array. Keys may return N elements.
-     * Array keys are relative to node $context (or retrieved through context expression).
+     * Array keys are relative to $context.
      */
-    public function setValuesAll( $context, array $array )
+    public function setValuesToAll( string $context, array $array )
     {
-        if (is_string($context)) {
-            $context = $this->getElement($context);
-        } else if (false === is_a($context, \DOMNode)) {
-            throw new \Exception('Invalid context');
-        }
-        
         foreach ($array as $k => $v) {
-            $this->setValueAll($k, $v, $context);
+            $this->setValueToAll($k, $v, $context);
         }
 
         return $this;

@@ -24,20 +24,15 @@ namespace Taocomp\Einvoicing;
 class EsitoCommittente extends AbstractNotice
 {
     /**
-     * Notice type
+     * Constants for root element ("NotificaEsitoCommittente")
      */
-    const TYPE = 'NotificaEsitoCommittente';
-    
+    const ROOT_TAG_NAME   = 'NotificaEsitoCommittente';
+
     /**
      * Constants for "Esito"
      */
     const EC01 = 'EC01';
     const EC02 = 'EC02';
-
-    /**
-     * Default destination dir where to save documents
-     */
-    protected static $defaultPrefixPath = null;
 
     /**
      * Notice elements
