@@ -17,6 +17,14 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 - ~php-xml~
 - tested for PHP 7+, should work on PHP 5.5+ too
 
+** Installation
+*** Composer
+~composer require taocomp/php-e-invoice-it ^0.1~
+
+*** Manually
+- Clone/download the repository
+- ~require_once('/path/to/php-e-invoice-it/vendor/autoload.php');~
+
 ** Invoice
 *** Create a new invoice
 Create a new FPA12 invoice:
