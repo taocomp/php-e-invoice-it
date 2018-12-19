@@ -198,8 +198,8 @@ class FatturaElettronica extends AbstractDocument
         }
 
         $progressivoInvio = $this->getValue('ProgressivoInvio');
-        $codice = $this->getValue('IdTrasmittente/IdCodice');
-        $paese = $this->getValue('IdTrasmittente/IdPaese');
+        $codice = $this->getValue('IdCodice', 'CedentePrestatore');
+        $paese = $this->getValue('IdPaese', 'CedentePrestatore');
 
         if (empty($progressivoInvio)) {
             throw new \Exception(__FUNCTION__ . ': ProgressivoInvio is empty');

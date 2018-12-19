@@ -250,8 +250,8 @@ class FatturaElettronicaTest extends TestCase
     {
         $invoice = new FatturaElettronica('FPR12');
         $invoice->setValue('ProgressivoInvio', '54321');
-        $invoice->setValue('IdTrasmittente/IdCodice', '00011122233');
-        $invoice->setValue('IdTrasmittente/IdPaese', 'IT');
+        $invoice->setValue('IdCodice', '00011122233', 'CedentePrestatore');
+        $invoice->setValue('IdPaese', 'IT', 'CedentePrestatore');
         $filename = $invoice->getFilename();
 
         $this->assertEquals('IT00011122233_54321.xml', $filename);
@@ -265,7 +265,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice->setValue('IdTrasmittente/IdCodice', '00011122233');
         $invoice->setValue('IdTrasmittente/IdPaese', 'IT');
         $invoice->setFilename($filename);
-        $invoice->setPrefixPath($prefixPath)->save();
+        $invoice->setPrefixPath($prefixPath)->save(true);
 
         $this->assertFileIsReadable($prefixPath . "/$filename");
     }
