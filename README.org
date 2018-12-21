@@ -2,6 +2,8 @@
 
 A PHP package for managing italian e-invoice and notice XML formats.
 
+/(Pacchetto PHP per gestire il formato XML di fatture e notifiche come richiesto dal SdI)./
+
 Please refer to
 - [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] for implementing web services required by the Italian Exchange System (aka "SdI")
 - [[https://github.com/taocomp/php-sdicoop-client][PHP SdICoop - Client]] to connect to SdI web services
