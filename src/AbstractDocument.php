@@ -71,7 +71,7 @@ abstract class AbstractDocument
                 throw new \Exception('static templateArray must be an array');
             }
 
-            $this->createElementsFromArray($root, static::$templateArray);
+            $this->addElementsFromArray($root, static::$templateArray);
             $this->dom->appendChild($root);
         } else if (is_readable($file)) {
             $this->load($file);
@@ -339,12 +339,14 @@ abstract class AbstractDocument
     /**
      * Recursively adds elements from array
      */
-    protected function createElementsFromArray( \DOMElement $parent, array $array )
+    public function addElementsFromArray( $parent, array $array )
     {
+        $parent = $this->getElement($parent);
+        
         foreach ($array as $k => $v) {
             if (true === is_array($v)) {
                 $node = $this->dom->createElement($k);
-                $this->createElementsFromArray($node, $v);
+                $this->addElementsFromArray($node, $v);
             } else {
                 $node = $this->dom->createElement($k, $v);
             }

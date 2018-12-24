@@ -168,6 +168,21 @@ class FatturaElettronicaTest extends TestCase
         $this->assertEquals(6, $count);
     }
 
+    public function testAddElementsFromArray()
+    {
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->addElementsFromArray('DatiGeneraliDocumento', array(
+            'DatiRitenuta' => array(
+                'TipoRitenuta' => '',
+                'ImportoRitenuta' => '23.00',
+                'AliquotaRitenuta' => ''
+            )
+        ));
+        $value = $invoice->getValue('DatiRitenuta/ImportoRitenuta');
+        
+        $this->assertEquals('23.00', $value);
+    }
+
     /**
      * Values
      ***************************************************************************
