@@ -141,9 +141,9 @@ class FatturaElettronicaTest extends TestCase
     public function testAddElementNoBeforeRef()
     {
         $invoice = new FatturaElettronica('FPA12');
-        $invoice->addElement('PECDestinatario', 'DatiTrasmissione');
-        $invoice->setValue('PECDestinatario', 'pec@example.com');
-        $value = $invoice->getValue('PECDestinatario');
+        $invoice->addElement('PECDestinatarioExtra', 'DatiTrasmissione');
+        $invoice->setValue('PECDestinatarioExtra', 'pec@example.com');
+        $value = $invoice->getValue('PECDestinatarioExtra');
 
         $this->assertEquals('pec@example.com', $value);
     }
@@ -168,20 +168,31 @@ class FatturaElettronicaTest extends TestCase
         $this->assertEquals(6, $count);
     }
 
-    public function testAddElementsFromArray()
+    public function testsetValuesToLineItem()
     {
         $invoice = new FatturaElettronica('FPR12');
-        $invoice->addElementsFromArray('DatiGeneraliDocumento', array(
-            'DatiRitenuta' => array(
-                'TipoRitenuta' => '',
-                'ImportoRitenuta' => '23.00',
-                'AliquotaRitenuta' => ''
-            )
-        ));
-        $value = $invoice->getValue('DatiRitenuta/ImportoRitenuta');
+        $invoice->addLineItem(3);
+        $invoice->setValue('DettaglioLinee[4]/NumeroLinea', 44);
+        $value = $invoice->getValue('DettaglioLinee[4]/NumeroLinea');
         
-        $this->assertEquals('23.00', $value);
+        $this->assertEquals(44, $value);
     }
+
+    // TODO: setElementsFromArray
+    // public function testAddElementsFromArray()
+    // {
+    //     $invoice = new FatturaElettronica('FPR12');
+    //     $invoice->addElementsFromArray('DatiGeneraliDocumento', array(
+    //         'DatiRitenuta' => array(
+    //             'TipoRitenuta' => '',
+    //             'ImportoRitenuta' => '23.00',
+    //             'AliquotaRitenuta' => ''
+    //         )
+    //     ));
+    //     $value = $invoice->getValue('DatiRitenuta/ImportoRitenuta');
+        
+    //     $this->assertEquals('23.00', $value);
+    // }
 
     /**
      * Values
@@ -214,10 +225,10 @@ class FatturaElettronicaTest extends TestCase
             // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
             'DatiAnagrafici/CodiceFiscale' => '01234567890',
             // Denominazione, somewhere inside CessionarioCommittente
-            'Denominazione' => 'BETA SRL'
+            'Anagrafica/Denominazione' => 'BETA SRL'
         ));
         $value1 = $invoice->getValue('DatiAnagrafici/CodiceFiscale', $tag);
-        $value2 = $invoice->getValue('Denominazione', $tag);
+        $value2 = $invoice->getValue('Anagrafica/Denominazione', $tag);
 
         $this->assertEquals(
             array('01234567890', 'BETA SRL'),

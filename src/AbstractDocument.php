@@ -99,7 +99,7 @@ abstract class AbstractDocument
     /**
      * Returns the document as XML
      */
-    public function asXML( bool $normalize = false )
+    public function asXML( bool $normalize = true )
     {
         if (true === $normalize) {
             $this->normalize();
@@ -123,8 +123,11 @@ abstract class AbstractDocument
      */
     public function normalize()
     {
-        foreach( $this->query('//*[not(node())]') as $node ) {
-            $node->parentNode->removeChild($node);
+        // TODO: recursive
+        for ($i = 0; $i < 4; $i++) {
+            foreach( $this->query('//*[not(node())]') as $node ) {
+                $node->parentNode->removeChild($node);
+            }
         }
 
         return $this;
@@ -282,7 +285,8 @@ abstract class AbstractDocument
             $this->normalize();
         }
 
-        if (false === $this->dom->save($dest, LIBXML_NOEMPTYTAG)) {
+        // if (false === $this->dom->save($dest, LIBXML_NOEMPTYTAG)) {
+        if (false === $this->dom->save($dest)) {
             throw new \Exception("Cannot save $className to '$dest'");
         }
 

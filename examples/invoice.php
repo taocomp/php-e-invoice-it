@@ -32,13 +32,13 @@ try
     $invoice->setValues('CessionarioCommittente', array(
         // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
         'DatiAnagrafici/CodiceFiscale' => '01234567890',
-        // Denominazione, somewhere inside CessionarioCommittente
-        'Denominazione' => 'BETA SRL'
+        // Anagrafica/Denominazione, somewhere inside CessionarioCommittente
+        'Anagrafica/Denominazione' => 'BETA SRL'
     ));
 
-    // Add element
-    $invoice->addElement('PECDestinatario', 'DatiTrasmissione');
-    $invoice->setValue('PECDestinatario', 'pec@example.com');
+    // Add elements
+    // $invoice->addElement('PECDestinatario', 'DatiTrasmissione');
+    // $invoice->setValue('PECDestinatario', 'pec@example.com');
 
     // Add elements from array
     $body = $invoice->getBody();
@@ -54,7 +54,7 @@ try
     // Set values for second body
     $body2 = $invoice->getBody(2);
     $invoice->setValue('Numero', 44, $body2);
-    $invoice->setValue('Data', '2018-12-12', $body2);
+    $invoice->setValue('DatiGeneraliDocumento/Data', '2018-12-12', $body2);
 
     // Save invoice
     // $invoice->save();
