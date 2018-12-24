@@ -24,8 +24,10 @@ try
         'IdCodice' => '09876543210',
         'IdPaese' => 'IT'
     ));
-    $invoice->setValues('CedentePrestatore/Sede', array(
-        'Indirizzo' => 'VIA UNIVERSO 1'
+    $invoice->setValues('CedentePrestatore', array(
+        'IdCodice' => '09876543210',
+        'IdPaese' => 'IT',
+        'Sede/Indirizzo' => 'VIA UNIVERSO 1'
     ));
     $invoice->setValues('CessionarioCommittente', array(
         // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
@@ -38,14 +40,29 @@ try
     $invoice->addElement('PECDestinatario', 'DatiTrasmissione');
     $invoice->setValue('PECDestinatario', 'pec@example.com');
 
+    // Add elements from array
+    $body = $invoice->getBody();
+    $datiGeneraliDocumento = $invoice->getElement('DatiGeneraliDocumento', $body);
+    $invoice->addElementsFromArray($datiGeneraliDocumento, array(
+        'DatiRitenuta' => array(
+            'TipoRitenuta' => '',
+            'ImportoRitenuta' => '23.00',
+            'AliquotaRitenuta' => ''
+        )
+    ));
+
     // Set values for second body
     $body2 = $invoice->getBody(2);
     $invoice->setValue('Numero', 44, $body2);
     $invoice->setValue('Data', '2018-12-12', $body2);
 
     // Save invoice
-    $invoice->save();
+    // $invoice->save();
 
+    // Show XML
+    $xml = $invoice->asXML();
+    header("Content-type: text/xml; charset=utf-8");
+    echo $xml . PHP_EOL;
     
     // --------------------------------------------------------------
     // Notice
@@ -65,8 +82,10 @@ try
     $notice->setFilenameFromInvoice($invoice, '_EC_001');
 
     // Save notice
-    $notice->save();
+    // $notice->save();
 
+    // XML
+    $xml = $notice->asXML();
 }
 catch (\Exception $e)
 {
