@@ -1,9 +1,9 @@
 <?php
 
 use \Taocomp\Einvoicing\FatturaElettronica;
-use \Taocomp\Einvoicing\Sdicoop\Client;
-use \Taocomp\Einvoicing\Sdicoop\FileSdIBase;
-use \Taocomp\Einvoicing\Sdicoop\RispostaSdIRiceviFile;
+use \Taocomp\Einvoicing\SdicoopClient\Client;
+use \Taocomp\Einvoicing\SdicoopClient\FileSdIBase;
+use \Taocomp\Einvoicing\SdicoopClient\RispostaSdIRiceviFile;
 
 try
 {
@@ -11,7 +11,7 @@ try
     define('CLIENT_DIR', __DIR__ . '/../../php-sdicoop-client');
     
     require_once(__DIR__ . '/../vendor/autoload.php');
-    require_once(CLIENT_DIR . '/autoload.php');
+    require_once(CLIENT_DIR . '/vendor/autoload.php');
 
     // Create a new invoice
     $invoice = new FatturaElettronica('FPR12');
@@ -20,15 +20,19 @@ try
         'IdCodice' => '02313821007',
         'IdPaese' => 'IT'
     ));
+    $invoice->setValues('CedentePrestatore', array(
+        'IdCodice' => '02313821007',
+        'IdPaese' => 'IT'
+    ));
 
     // Setup client
-    Client::setPrivateKey(CLIENT_DIR . '/examples/client.key');
-    Client::setClientCert(CLIENT_DIR . '/examples/client.pem');
-    Client::setCaCert(CLIENT_DIR . '/examples/ca.pem');
+    Client::setPrivateKey(CLIENT_DIR . '/assets/key/client.key');
+    Client::setClientCert(CLIENT_DIR . '/assets/certs/client.pem');
+    Client::setCaCert(CLIENT_DIR . '/assets/certs/ca.pem');
 
     $client = new Client(array(
         'endpoint' => 'https://testservizi.fatturapa.it/ricevi_file',
-        'wsdl'     => CLIENT_DIR . '/wsdl/SdIRiceviFile_v1.0.wsdl'
+        'wsdl'     => CLIENT_DIR . '/assets/wsdl/SdIRiceviFile_v1.0.wsdl'
     ));
 
     // Send invoice

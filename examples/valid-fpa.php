@@ -29,7 +29,7 @@ try
     ));
     $invoice->setValues('CessionarioCommittente', array(
         'CodiceFiscale' => '02313821007',
-        'Denominazione' => 'AMMINISTRAZIONE',
+        'Anagrafica/Denominazione' => 'AMMINISTRAZIONE',
     ));
     $invoice->setValues('CessionarioCommittente/Sede', array(
         'Indirizzo' => 'VIALE MONDO 99',
@@ -75,6 +75,11 @@ try
     ));
 
     $invoice->save(true);
+
+    // Show XML
+    $xml = $invoice->asXML();
+    header("Content-type: text/xml; charset=utf-8");
+    echo $xml . PHP_EOL;
 }
 catch (\Exception $e)
 {
