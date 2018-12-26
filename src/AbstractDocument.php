@@ -396,6 +396,18 @@ abstract class AbstractDocument
     }
 
     /**
+     * Remove an element
+     */
+    public function removeElement( $element )
+    {
+        $element = $this->getElement($element);
+        $parent = $element->parentNode;
+        $parent->removeChild($element);
+
+        return $this;
+    }
+
+    /**
      * VALUES
      ***************************************************************************
      */

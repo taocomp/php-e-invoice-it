@@ -74,6 +74,8 @@ try
         'ImportoPagamento' => '61.00'
     ));
 
+    $invoice->removeElement('DatiDDT');
+
     $invoice->save(true);
 
     // Show XML
