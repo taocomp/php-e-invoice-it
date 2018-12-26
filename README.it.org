@@ -1,0 +1,118 @@
+* Installazione
+* Setup
+* Nuova fattura
+* Caricamento di una fattura esistente
+* Individuare gli elementi
+In generale, per individuare gli elementi che si vogliono leggere o modificare all'interno dell'XML sono necessari:
+- il nome dell'elemento che si vuole leggere o modificare
+- (opzionale) un nodo /context/ a cui appartiene l'elemento (stringa o ~\DOMNode~)
+
+La sintassi da utilizzare è quella XPath, con le seguenti facilitazioni.
+
+** Path assoluto
+Se il path è assoluto (comincia con ~/~), esso è in realtà relativo al nodo root del documento. Nel caso di una fattura elettronica:
+#+BEGIN_SRC 
+$this->getValue('/FatturaElettronicaHeader/DatiTrasmissione/CodiceDestinatario');
+#+END_SRC
+
+è equivalente a una query effettuata con ~\DOMXPath~ per
+#+BEGIN_SRC 
+/p:FatturaElettronica/FatturaElettronicaHeader/DatiTrasmissione/CodiceDestinatario
+#+END_SRC
+
+Un path assoluto non può avere /context/.
+
+** Path relativo
+A un path relativo viene sempre anteposto ~//~:
+
+#+BEGIN_CENTER
+Selects nodes in the document from the current node that match the selection no matter where they are. ([[https://www.w3schools.com/xml/xpath_syntax.asp][XPath Syntax]])
+#+END_CENTER
+
+Se è presente un /context/, viene anteposto ~.//~. Il punto specifica che si intende partire dal nodo /context/.
+
+È possibile anche specificare predicati XPath, ad esempio
+#+BEGIN_SRC 
+$invoice->getValue('DettaglioLinee[2]/NumeroLinea');
+#+END_SRC
+
+leggerà il valore di ~NumeroLinea~ del secondo blocco ~DettaglioLinee~. La numerazione parte da 1 e non da 0, come da sintassi XPath.
+
+** Tag
+Se viene fornito solo il nome dell'elemento (non sono presenti ~/~), vengono seguite le stesse regole dei path relativi. Ad esempio per selezionare ~ModalitaPagamento~:
+
+#+BEGIN_SRC 
+$invoice->getValue('ModalitaPagamento');
+#+END_SRC
+
+Con un /context/:
+#+BEGIN_SRC 
+$invoice->getValue('NumItem', 'DatiContratto');
+#+END_SRC
+
+* Leggere/modificare i valori
+** ~getValue( string $expr, $context = null )~
+Restituisce il valore dell'elemento individuato da ~$expr/$context~, se ~$expr/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
+
+Esempi validi:
+#+BEGIN_SRC 
+$invoice->getValue('ProgressivoInvio');
+$invoice->getValue('Sede/Indirizzo', 'CedentePrestatore');
+#+END_SRC
+
+Esempi non validi:
+#+BEGIN_SRC 
+$invoice->getValue('IdPaese');
+$invoice->getValue('Sede/Indirizzo', 'FatturaElettronicaHeader');
+#+END_SRC
+
+Come detto, ~$context~ può essere un oggetto ~\DOMNode~.
+
+** ~setValue( string $expr, $value, $context = null )~
+Setta il valore ~$value~ per l'elemento individuato da ~$expr/$context~, se ~$expr/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
+
+** ~setValueToAll( string $expr, $value, string $context = null )~
+Setta il valore ~$value~ per tutti gli elementi individuati da ~$expr/$context~.
+
+** ~setValues( string $context, array $array )~
+Per ogni coppia chiave/valore ~$k/$v~ dell'array, setta il valore ~$v~ per l'elemento individuato da ~$k/$context~, se ~$k/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
+
+Esempio:
+#+BEGIN_SRC 
+$invoice->setValues('CessionarioCommittente', array(
+    'CodiceFiscale' => '02313821007',
+    'Anagrafica/Denominazione' => 'AMMINISTRAZIONE',
+));
+#+END_SRC
+
+** ~setValuesToAll( string $context, array $array )~
+Per ogni coppia chiave/valore ~$k/$v~ dell'array, setta il valore ~$v~ per tutti gli elementi individuati da ~$k/$context~.
+
+** ~setValuesFromArray( $context, array $array )~
+Dato un array che rispecchia fedelmente una porzione di struttura XML di un certo nodo ~$context~, setta i rispettivi valori.
+
+Esempio:
+#+BEGIN_SRC 
+$array =  array(
+    'DatiAnagraficiVettore' => array(
+        'IdFiscaleIVA' => array(
+            'IdPaese' => 'IT',
+            'IdCodice' => '09876543210'
+        ),
+        'Anagrafica' => array(
+            'Denominazione' => 'TRASPORTO SRLS'
+        ),
+        'NumeroLicenzaGuida' => 'AA090909'
+    ),
+    'MezzoTrasporto' => 'Mezzo',
+    'CausaleTrasporto' => 'La causale del traporto',
+    'NumeroColli' => '1',
+    'Descrizione' => 'La descrizione'
+);
+
+$invoice->setValuesFromArray('DatiTrasporto', $array);
+#+END_SRC
+
+* Visualizzazione dell'XML
+* Salvataggio su file
+* Invio al Sistema di Interscambio (SdI)
