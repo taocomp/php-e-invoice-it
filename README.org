@@ -135,7 +135,7 @@ $invoice->save();
 #+END_SRC
 
 *** Send invoice to SdI
-Setup a ~\Taocomp\Sdicoop\Client~ object (for connecting to webservice SdIRiceviFile):
+Setup a ~\Taocomp\Einvoicing\SdicoopClient\Client~ object (for connecting to webservice SdIRiceviFile):
 #+BEGIN_SRC 
 use \Taocomp\Einvoicing\SdicoopClient\Client;
 use \Taocomp\Einvoicing\SdicoopClient\FileSdIBase;
@@ -186,7 +186,7 @@ $notice->save();
 #+END_SRC
 
 *** Send notice to SdI
-Setup a ~\Taocomp\Sdicoop\Client~ object (for connecting to webservice SdIRiceviNotifica):
+Setup a ~\Taocomp\Einvoicing\SdicoopClient\Client~ object (for connecting to webservice SdIRiceviNotifica):
 #+BEGIN_SRC 
 use \Taocomp\Einvoicing\SdicoopClient\Client;
 use \Taocomp\Einvoicing\SdicoopClient\FileSdI;
