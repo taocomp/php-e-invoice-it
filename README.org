@@ -17,7 +17,7 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 * Quickstart
 ** Dependencies
 - ~php-xml~
-- tested for PHP 7+, should work on PHP 5.5+ too
+- tested for PHP 7+ +should work on PHP 5.5+ +too+ 
 
 ** Installation
 *** Composer
