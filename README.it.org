@@ -1,10 +1,59 @@
 * Installazione
+** Composer
+~composer require taocomp/php-e-invoice-it~
+
+** Manualmente
+- Clonare o scaricare il repository
+- ~require_once('/path/to/php-e-invoice-it/vendor/autoload.php');~
+
 * Setup
-* Nuova fattura
-* Caricamento di una fattura esistente
+Se utilizzate ~composer~, avrete già incluso il file ~vendor/autoload.php~ nel vostro codice.
+
+Se avete clonato/scaricato il repository:
+#+BEGIN_SRC 
+require_once('/path/to/php-e-invoice-it/vendor/autoload.php');
+#+END_SRC
+
+In entrambi i casi, per utilizzare la classe ~FatturaElettronica~:
+#+BEGIN_SRC 
+use Taocomp\Einvoicing\FatturaElettronica;
+#+END_SRC
+
+Per utilizzare la classe ~EsitoCommittente~:
+#+BEGIN_SRC 
+use Taocomp\Einvoicing\EsitoCommittente;
+#+END_SRC
+
+* Nuova fattura/notifica
+Fattura FPA:
+#+BEGIN_SRC 
+$invoice = new FatturaElettronica('FPA12');
+#+END_SRC
+
+Fattura FPR:
+#+BEGIN_SRC 
+$invoice = new FatturaElettronica('FPR12');
+#+END_SRC
+
+Notifica EsitoCommittente:
+#+BEGIN_SRC 
+$notice = new EsitoCommittente();
+#+END_SRC
+
+* Caricamento di una fattura/notifica esistente
+#+BEGIN_SRC 
+$invoice = new FatturaElettronica('/path/to/invoice.xml');
+#+END_SRC
+
+Oppure:
+#+BEGIN_SRC 
+$invoice = new FatturaElettronica('FPR12');
+$invoice->load('/path/to/invoice.xml');
+#+END_SRC
+
 * Individuare gli elementi
 In generale, per individuare gli elementi che si vogliono leggere o modificare all'interno dell'XML sono necessari:
-- il nome dell'elemento che si vuole leggere o modificare
+- il nome o path dell'elemento che si vuole leggere o modificare
 - (opzionale) un nodo /context/ a cui appartiene l'elemento (stringa o ~\DOMNode~)
 
 La sintassi da utilizzare è quella XPath, con le seguenti facilitazioni.
@@ -26,7 +75,7 @@ Un path assoluto non può avere /context/.
 A un path relativo viene sempre anteposto ~//~:
 
 #+BEGIN_CENTER
-Selects nodes in the document from the current node that match the selection no matter where they are. ([[https://www.w3schools.com/xml/xpath_syntax.asp][XPath Syntax]])
+"Selects nodes in the document from the current node that match the selection no matter where they are". ([[https://www.w3schools.com/xml/xpath_syntax.asp][XPath Syntax]])
 #+END_CENTER
 
 Se è presente un /context/, viene anteposto ~.//~. Il punto specifica che si intende partire dal nodo /context/.
@@ -71,10 +120,10 @@ Come detto, ~$context~ può essere un oggetto ~\DOMNode~.
 ** ~setValue( string $expr, $value, $context = null )~
 Setta il valore ~$value~ per l'elemento individuato da ~$expr/$context~, se ~$expr/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
 
-** ~setValueToAll( string $expr, $value, string $context = null )~
+** ~setValueToAll( string $expr, $value, $context = null )~
 Setta il valore ~$value~ per tutti gli elementi individuati da ~$expr/$context~.
 
-** ~setValues( string $context, array $array )~
+** ~setValues( $context, array $array )~
 Per ogni coppia chiave/valore ~$k/$v~ dell'array, setta il valore ~$v~ per l'elemento individuato da ~$k/$context~, se ~$k/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
 
 Esempio:
@@ -85,11 +134,11 @@ $invoice->setValues('CessionarioCommittente', array(
 ));
 #+END_SRC
 
-** ~setValuesToAll( string $context, array $array )~
+** ~setValuesToAll( $context, array $array )~
 Per ogni coppia chiave/valore ~$k/$v~ dell'array, setta il valore ~$v~ per tutti gli elementi individuati da ~$k/$context~.
 
 ** ~setValuesFromArray( $context, array $array )~
-Dato un array che rispecchia fedelmente una porzione di struttura XML di un certo nodo ~$context~, setta i rispettivi valori.
+Dato un array che rispecchia fedelmente una porzione di struttura XML di un certo nodo ~$context~, setta ricorsivamente i rispettivi valori.
 
 Esempio:
 #+BEGIN_SRC 
@@ -113,6 +162,194 @@ $array =  array(
 $invoice->setValuesFromArray('DatiTrasporto', $array);
 #+END_SRC
 
+* Lotto di fatture
+** ~addBody( int $n = 1 )~
+Aggiunge n ~FatturaElettronicaBody~ alla fattura.
+
+Poiché clona il primo body, verranno clonati anche tutti gli eventuali valori al suo interno.
+
+** ~getBody( int $bodyIndex = 1 )~
+Restituisce l'oggetto ~\DOMNode~ relativo all'i-esimo body.
+
+Come da sintassi XPath, l'indice parte da 1.
+
+** ~setBodyCount( int $n )~
+Setta il numero complessivo di ~FatturaElettronicaBody~.
+
+Può essere usato alternativamente a ~addBody~.
+
+Ad esempio per creare un lotto di 5 fatture:
+#+BEGIN_SRC 
+$invoice->setBodyCount(5);
+// oppure
+$invoice->addBody(4);
+#+END_SRC
+
+* Più linee di dettaglio
+** ~addLineItem( int $n, int $bodyIndex = 1 )~
+Aggiunge ~$n~ linee di dettaglio al body ~$bodyIndex~.
+
+Ad esempio per aggiungere 3 linee di dettaglio al secondo body:
+#+BEGIN_SRC 
+$invoice->addLineItem(3, 2);
+#+END_SRC
+
+** ~getLineItem( int $i, int $bodyIndex = 1 )~
+Restituisce l'oggetto ~\DOMNode~ relativo alla i-esima linea di dettaglio del body ~$bodyIndex~.
+
+** ~setLineItemCount( int $n, int $bodyIndex = 1 )~
+Setta il numero complessivo di ~DettaglioLinee~ del body ~$bodyIndex~.
+
+Può essere usato alternativamente a ~addLineItem~.
+
+* Gestione degli elementi XML
+Normalmente non c'è bisogno di utilizzare i seguenti metodi per prendere/aggiungere/rimuovere elementi XML come nodi ~\DOMNode~ perché:
+- per leggere/settare i valori degli elementi si possono usare i loro nomi o i path, come stringhe
+- per aggiungere elementi ~FatturaElettronicaBody~ (lotto di fatture) si possono usare i metodi ~addBody~, ~getBody~ e ~setBodyCount~
+- per aggiungere linee di dettaglio si possono usare i metodi ~addLineItem~, ~getLineItem~ e ~setLineItemCount~
+
+In ogni caso a volte può servire aggiungere, rimuovere o prendere un determinato elemento della struttura XML. È possibile farlo con i seguenti metodi.
+
+** ~addElement( $element, $parent, $beforeRef = null )~
+Aggiunge un elemento ~$element~ all'interno del nodo genitore ~$parent~. Viene posizionato prima del nodo fratello ~$beforeRef~, se ~$beforeRef~ non è nullo.
+
+** ~addElementsFromArray( $parent, array $array )~
+Dato un array che rispecchia fedelmente una porzione di struttura XML di un certo nodo ~parent~, aggiunge ricorsivamente i vari elementi dell'array. Il metodo viene usato nel ~constructor~ per creare l'intera struttura della fattura (e della notifica).
+
+** ~getElement( $expr, $context = null )~
+Prende un determinato elemento individuato da ~$expr/$context~, se ~$expr/$context~ restituisce un elemento univoco, altrimenti genera un'eccezione.
+
+** ~removeElement( $element )~
+Rimuove l'elemento ~$element~, se univoco. Altrimenti genera un'eccezione.
+
+* Altri metodi comuni a fatture e notifiche
+** ~getDOM()~
+Restituisce l'oggetto ~\DOMDocument~ relativo alla fattura.
+
+** ~normalize()~
+Rimuove gli elementi XML vuoti.
+
+** ~query( string $expr, $context = null, bool $registerNodeNS = true )~
+Restituisce una lista di elementi ~\DOMNodeList~ derivante dalla query ~$expr/$context~.
+
 * Visualizzazione dell'XML
+Per recuperare la fattura come stringa XML:
+#+BEGIN_SRC 
+$invoice->asXML();
+#+END_SRC
+
+Di default gli elementi vuoti vengono eliminati prima di stampare la stringa XML (normalizzazione). Per visualizzarli:
+#+BEGIN_SRC 
+$invoice->asXML(false);
+#+END_SRC
+
 * Salvataggio su file
+** Fattura
+Quando si salva una fattura, di default il nome del file è dato da:
+#+BEGIN_SRC 
+IdPaese . IdCodice . _ . ProgressivoInvio . .xml
+#+END_SRC
+
+È possibile in ogni caso assegnare un nome arbitrario alla fattura:
+#+BEGIN_SRC 
+$invoice->setFilename('filename');
+#+END_SRC
+
+Per settare una directory di destinazione dove salvare la fattura:
+#+BEGIN_SRC 
+$invoice->setPrefixPath('path/to/dir');
+#+END_SRC
+
+Per settare una directory di destinazione per tutti gli oggetti ~FatturaElettronica~ che verranno creati:
+#+BEGIN_SRC 
+FatturaElettronica::setDefaultPrefixPath('path/to/dir');
+#+END_SRC
+
+Per salvare la fattura:
+#+BEGIN_SRC 
+$invoice->save();
+#+END_SRC
+
+Se è già presente un file con lo stesso nome viene generata un'eccezione. Per sovrascrivere il file:
+#+BEGIN_SRC 
+$overwrite = true;
+$invoice->save($overwrite);
+#+END_SRC
+
+Prima di salvare il file, l'XML viene normalizzato (vengono rimossi gli elementi vuoti). Per disabilitare la normalizzazione:
+#+BEGIN_SRC 
+$overwrite = false;
+$normalize = false;
+$invoice->save($overwrite, $normalize);
+#+END_SRC
+
+Getters:
+#+BEGIN_SRC 
+FatturaElettronica::getDefaultPrefixPath();
+$invoice->getFilename();
+$invoice->getPrefixPath();
+#+END_SRC
+
+** Notifica
+I metodi visti per le fatture valgono anche per le notifiche.
+
+Inoltre, per costruire il nome del file notifica a partire da quello di una certa ~$invoice~:
+#+BEGIN_SRC 
+$notice->setFilenameFromInvoice($invoice, '_EC_001');
+#+END_SRC
+
+Per pre-popolare i valori della notifica a partire da quelli di una fattura:
+#+BEGIN_SRC 
+$notice->setValuesFromInvoice($invoice, $bodyIndex);
+#+END_SRC
+
 * Invio al Sistema di Interscambio (SdI)
+** Fatture
+#+BEGIN_SRC 
+use Taocomp\Einvoicing\SdicoopClient\Client;
+use Taocomp\Einvoicing\SdicoopClient\FileSdIBase;
+use Taocomp\Einvoicing\SdicoopClient\RispostaSdIRiceviFile;
+
+$invoice = new FatturaElettronica('FPR12');
+// ...
+// settaggio valori
+// ...
+
+Client::setPrivateKey('/path/to/client.key');
+Client::setClientCert('/path/to/client.pem');
+Client::setCaCert('/path/to/ca.pem');
+
+$client = new Client(array(
+    'endpoint' => 'https://testservizi.fatturapa.it/ricevi_file',
+    'wsdl'     => '/path/to/wsdl/SdIRiceviFile_v1.0.wsdl'
+));
+
+$fileSdI = new FileSdIBase();
+$fileSdI->load($invoice);
+$response = new RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
+#+END_SRC
+
+** Notifiche
+#+BEGIN_SRC 
+use Taocomp\Einvoicing\SdicoopClient\Client;
+use Taocomp\Einvoicing\SdicoopClient\FileSdI;
+use Taocomp\Einvoicing\SdicoopClient\RispostaSdINotificaEsito;
+
+$notice = new EsitoCommittente();
+// ...
+// settaggio valori
+// ...
+
+Client::setPrivateKey('/path/to/client.key');
+Client::setClientCert('/path/to/client.pem');
+Client::setCaCert('/path/to/ca.pem');
+
+$client = new Client(array(
+    'endpoint' => 'https://testservizi.fatturapa.it/ricevi_notifica',
+    'wsdl'     => __DIR__ . '/../wsdl/SdIRiceviNotifica_v1.0.wsdl'
+));
+
+$fileSdI = new FileSdI();
+$fileSdI->load($notice);
+$response = new RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
+#+END_SRC

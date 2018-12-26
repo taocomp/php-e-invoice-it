@@ -168,16 +168,6 @@ class FatturaElettronicaTest extends TestCase
         $this->assertEquals(6, $count);
     }
 
-    public function testsetValuesToLineItem()
-    {
-        $invoice = new FatturaElettronica('FPR12');
-        $invoice->addLineItem(3);
-        $invoice->setValue('DettaglioLinee[4]/NumeroLinea', 44);
-        $value = $invoice->getValue('DettaglioLinee[4]/NumeroLinea');
-        
-        $this->assertEquals(44, $value);
-    }
-
     // TODO: setElementsFromArray
     // public function testAddElementsFromArray()
     // {
@@ -198,13 +188,53 @@ class FatturaElettronicaTest extends TestCase
      * Values
      ***************************************************************************
      */
-    public function testGetOneValueByTag()
+    public function testGetValueByTag()
     {
         $tag = 'ProgressivoInvio';
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $value = $invoice->getValue($tag);
 
         $this->assertEquals('00001', $value);
+    }
+
+    public function testGetValueWithContext()
+    {
+        $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA02.xml');
+        $value = $invoice->getValue('NumItem', 'DatiContratto');
+
+        $this->assertEquals('5', (string)$value);
+    }
+
+    public function testGetValueByAbsolutePath()
+    {
+        $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA02.xml');
+        $value = $invoice->getValue('/FatturaElettronicaHeader/DatiTrasmissione/CodiceDestinatario');
+
+        $this->assertEquals('AAAAAA', $value);
+    }
+
+    public function testGetValueByRelativePath()
+    {
+        $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA02.xml');
+        $value = $invoice->getValue('DettaglioLinee[2]/NumeroLinea');
+
+        $this->assertEquals('2', (string)$value);
+    }
+
+    public function testCannotGetAmbiguousValue()
+    {
+        $this->expectException(\Exception::class);
+
+        $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA02.xml');
+        $value = $invoice->getValue('IdPaese');
+    }
+
+    public function testCannotGetAmbiguousValue2()
+    {
+        $this->expectException(\Exception::class);
+
+        $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA02.xml');
+        $value = $invoice->getValue('Sede/Indirizzo', 'FatturaElettronicaHeader');
     }
 
     public function testSetOneValueByTagNoContext()
@@ -266,6 +296,43 @@ class FatturaElettronicaTest extends TestCase
             array('22.00', '22.00', 'TRASPORTO SPA'),
             array($value1, $value2, $value3)
         );
+    }
+
+    public function testSetValuesToLineItem()
+    {
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->addLineItem(3);
+        $invoice->setValue('DettaglioLinee[4]/NumeroLinea', 44);
+        $value = $invoice->getValue('DettaglioLinee[4]/NumeroLinea');
+        
+        $this->assertEquals(44, $value);
+    }
+
+    public function testSetValuesFromArray()
+    {
+        $array =  array(
+            'DatiAnagraficiVettore' => array(
+                'IdFiscaleIVA' => array(
+                    'IdPaese' => 'IT',
+                    'IdCodice' => '09876543210'
+                ),
+                'Anagrafica' => array(
+                    'Denominazione' => 'TRASPORTO SRLS'
+                ),
+                'NumeroLicenzaGuida' => 'AA090909'
+            ),
+            'MezzoTrasporto' => 'Mezzo',
+            'CausaleTrasporto' => 'La causale del traporto',
+            'NumeroColli' => '1',
+            'Descrizione' => 'La descrizione'
+        );
+
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->setValuesFromArray('DatiTrasporto', $array);
+        $value1 = $invoice->getValue('Denominazione', 'DatiTrasporto');
+        $value2 = $invoice->getValue('NumeroLicenzaGuida', 'DatiTrasporto');
+
+        $this->assertEquals('TRASPORTO SRLS AA090909', "$value1 $value2");        
     }
 
     /**

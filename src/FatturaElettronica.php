@@ -466,6 +466,11 @@ class FatturaElettronica extends AbstractDocument
     }
 
     /**
+     * BODY
+     ***************************************************************************
+     */
+
+    /**
      * Add body (invoice lot)
      */
     public function addBody( int $n = 1 )
@@ -492,6 +497,19 @@ class FatturaElettronica extends AbstractDocument
     }
 
     /**
+     * Set number of bodies (invoice lot)
+     */
+    public function setBodyCount( int $n )
+    {
+        return $this->addBody($n - 1);
+    }
+
+    /**
+     * LINE ITEMS
+     ***************************************************************************
+     */
+
+    /**
      * Add line item
      */
     public function addLineItem( int $n, int $bodyIndex = 1 )
@@ -516,6 +534,18 @@ class FatturaElettronica extends AbstractDocument
         return $this;
     }
 
+    /**
+     * Get line item i
+     */
+    public function getLineItem( int $i, int $bodyIndex = 1 )
+    {
+        $body = $this->getBody($bodyIndex);
+        return $this->getElement("DettaglioLinee[$i]", $body);
+    }
+
+    /**
+     * Set number of line items
+     */
     public function setLineItemCount( int $n, int $bodyIndex = 1 )
     {
         return $this->addLineItem($n - 1, $bodyIndex);

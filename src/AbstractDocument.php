@@ -137,7 +137,7 @@ abstract class AbstractDocument
      * Query for elements.
      *
      * - Absolute paths: omit root element (for example p:FatturaElettronica)
-     * - Tags are prefixed with "//"
+     * - Tags are prefixed with "(.)//"
      * - Relative paths are prefixed with "(.)//"
      *
      * $context can be a string or a \DOMNode
@@ -434,7 +434,7 @@ abstract class AbstractDocument
     /**
      * Set same value $value to all elements retrieved through $expr
      */
-    public function setValueToAll( string $expr, $value, string $context = null )
+    public function setValueToAll( string $expr, $value, $context = null )
     {
         $elements = $this->query($expr, $context);
 
@@ -449,7 +449,7 @@ abstract class AbstractDocument
      * Set values from an associative array. Keys must return just one element.
      * Array keys are relative to $context.
      */
-    public function setValues( string $context, array $array )
+    public function setValues( $context, array $array )
     {
         foreach ($array as $k => $v) {
             $this->setValue($k, $v, $context);
@@ -459,10 +459,27 @@ abstract class AbstractDocument
     }
 
     /**
+     * Recursively set values from array
+     */
+    public function setValuesFromArray( $context, array $array )
+    {
+        $context = $this->getElement($context);
+        
+        foreach ($array as $k => $v) {
+            if (true === is_array($v)) {
+                $node = $this->getElement($k, $context);
+                $this->setValuesFromArray($node, $v);
+            } else {
+                $this->setValue($k, $v, $context);
+            }
+        }
+    }
+
+    /**
      * Set values from an associative array. Keys may return N elements.
      * Array keys are relative to $context.
      */
-    public function setValuesToAll( string $context, array $array )
+    public function setValuesToAll( $context, array $array )
     {
         foreach ($array as $k => $v) {
             $this->setValueToAll($k, $v, $context);
