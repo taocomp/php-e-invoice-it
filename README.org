@@ -1,10 +1,16 @@
 #+TITLE: PHP E-invoice It
 
-A PHP package for managing italian e-invoice and notice XML formats.
+A PHP package for managing italian e-invoice and notice XML formats:
+- XML management through ~DOMDocument~ and ~DOMXPath~
+- full ~FatturaElettronica~ XML skeleton
+- smart simplified xpath strings for getting/setting values (and for adding/getting/removing elements if needed)
+- multiple bodies (invoice lot)
+- multiple line items (~DettaglioLinee~)
+- XML normalization (remove empty elements)
 
 /(Pacchetto PHP per gestire il formato XML di fatture e notifiche come richiesto dal SdI)./
 
-/[[file:README.it.org][Qui]] la documentazione aggiornata in italiano/
+/([[file:README.it.org][Qui]] la documentazione aggiornata in italiano)./
 
 Please refer to
 - [[https://github.com/taocomp/php-sdicoop-server][PHP SdICoop - Server]] for implementing web services required by the Italian Exchange System (aka "SdI")
@@ -56,23 +62,50 @@ $invoice->setFilename($filename);
 $invoice->setPrefixPath($prefixPath)->save();
 #+END_SRC
 *** Invoice lot and line items
-Add 2 bodies:
+Set 3 bodies:
 #+BEGIN_SRC 
 $invoice->addBody(2);
+// or
+$invoice->setBodyCount(3);
 #+END_SRC
 
-Add 3 line items to second body:
+Set 4 line items for second body:
 #+BEGIN_SRC 
 $invoice->addLineItem(3, 2);
+// or
+$invoice->setLineItemCount(4, 2);
 #+END_SRC
 
-*** Set values
-Set single value:
+*** Get/Set values
+In general, you can get/set values (and add/get/remove elements) by using a tag/path and an optional /context/.
+
+Please note that:
+- an absolute path is relative to the root element: ~/FatturaElettronicaHeader~ means ~/p:FatturaElettronica/FatturaElettronicaHeader~
+- tags and relative paths are prefixed with ~(.)//~
+- xpath predicates are allowed: ~$invoice->getValue('DettaglioLinee[2]/NumeroLinea');~
+
+Get a value:
+#+BEGIN_SRC 
+$invoice->getValue('ModalitaPagamento');
+#+END_SRC
+
+Get a value with a /context/:
+#+BEGIN_SRC 
+$invoice->getValue('NumItem', 'DatiContratto');
+#+END_SRC
+
+Invalid queries (they return more than one element):
+#+BEGIN_SRC 
+$invoice->getValue('IdPaese');
+$invoice->getValue('Sede/Indirizzo', 'FatturaElettronicaHeader');
+#+END_SRC
+
+Set a value for a specific element:
 #+BEGIN_SRC 
 $invoice->setValue('ProgressivoInvio', 10001);
 #+END_SRC
 
-Set values via-array:
+Set many single values at once:
 #+BEGIN_SRC 
 $invoice->setValues('IdTrasmittente', array(
     'IdCodice' => '09876543210',
@@ -102,7 +135,7 @@ $invoice->setValue('Numero', 44, $body2);
 $invoice->setValue('Data', '2018-12-12', $body2);
 #+END_SRC
 
-Set multiple values at once:
+Set values to multiple elements at once:
 #+BEGIN_SRC 
 $invoice->setValuesToAll('DatiGenerali', array(
     // All "RiferimentoNumeroLinea" somewhere inside DatiGenerali
@@ -114,11 +147,29 @@ $invoice->setValuesToAll('DatiGenerali', array(
 ));
 #+END_SRC
 
-*** Add elements
+Set values from an assoc array:
 #+BEGIN_SRC 
-$invoice->addElement('PECDestinatario', 'DatiTrasmissione');
-$invoice->setValue('PECDestinatario', 'pec@example.com');
+$array =  array(
+    'DatiAnagraficiVettore' => array(
+        'IdFiscaleIVA' => array(
+            'IdPaese' => 'IT',
+            'IdCodice' => '09876543210'
+        ),
+        'Anagrafica' => array(
+            'Denominazione' => 'TRASPORTO SRLS'
+        ),
+        'NumeroLicenzaGuida' => 'AA090909'
+    ),
+    'MezzoTrasporto' => 'Mezzo',
+    'CausaleTrasporto' => 'La causale del traporto',
+    'NumeroColli' => '1',
+    'Descrizione' => 'La descrizione'
+);
+
+$invoice->setValuesFromArray('DatiTrasporto', $array);
 #+END_SRC
+
+All but ~setValueToAll~ and ~setValuesToAll~ methods will throw an exception if ~$expr/$context~ don't return just one element.
 
 *** Save invoice
 Set an optional default destination dir for all invoices:
@@ -134,6 +185,11 @@ $invoice->setPrefixPath('path/to/another/dir');
 Save invoice:
 #+BEGIN_SRC 
 $invoice->save();
+#+END_SRC
+
+Specify a custom filename:
+#+BEGIN_SRC 
+$invoice->setFilename('my-invoice.xml')->save();
 #+END_SRC
 
 *** Send invoice to SdI
