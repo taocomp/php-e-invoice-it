@@ -466,6 +466,24 @@ class FatturaElettronica extends AbstractDocument
     }
 
     /**
+     * Override normalize to check for "Causale" length
+     */
+    public function normalize()
+    {
+        $bodies = $this->query('FatturaElettronicaBody');
+
+        foreach ($bodies as $body) {
+            // Split "Causale" if needed
+            $causaleCount = $this->query('DatiGeneraliDocumento/Causale', $body)->count();
+            if ($causaleCount === 1) {
+                $this->splitElement('DatiGeneraliDocumento/Causale', 200, $body);
+            }
+        }
+        
+        return parent::normalize();
+    }
+
+    /**
      * BODY
      ***************************************************************************
      */

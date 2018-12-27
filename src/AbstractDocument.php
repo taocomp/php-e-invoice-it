@@ -337,7 +337,7 @@ abstract class AbstractDocument
             $parent->insertBefore($element, $beforeRef);
         }
 
-        return $this;
+        return $element;
     }
 
     /**
@@ -408,6 +408,31 @@ abstract class AbstractDocument
     }
 
     /**
+     * Split an element if its value (as string) is > $splitLen characters.
+     */
+    public function splitElement( $element, int $splitLen, $context = null )
+    {
+        $element = $this->getElement($element, $context);
+        $nextSibling = $element->nextSibling;
+        $value = $this->getValue($element);
+        $strlen = strlen((string)$value);
+
+        if ($strlen <= $splitLen) {
+            return $this;
+        }
+
+        $chunks = str_split($value, $splitLen);
+        $first = array_shift($chunks);
+
+        $this->setValue($element, $first);
+
+        foreach ($chunks as $chunk) {
+            $newElement = $this->addElement($element->nodeName, $element->parentNode, $nextSibling);
+            $newElement->nodeValue = $chunk;
+        }
+    }
+
+    /**
      * VALUES
      ***************************************************************************
      */
@@ -415,7 +440,7 @@ abstract class AbstractDocument
     /**
      * Get value
      */
-    public function getValue( string $expr, $context = null )
+    public function getValue( $expr, $context = null )
     {
         return $this->getElement($expr, $context)->nodeValue;
     }
@@ -424,7 +449,7 @@ abstract class AbstractDocument
      * Set value for a given element, if the element is unique (by tag or xpath).
      * Throws an exception otherwise.
      */
-    public function setValue( string $expr, $value, $context = null )
+    public function setValue( $expr, $value, $context = null )
     {
         $this->getElement($expr, $context)->nodeValue = $value;
 

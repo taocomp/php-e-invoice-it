@@ -184,6 +184,22 @@ class FatturaElettronicaTest extends TestCase
     //     $this->assertEquals('23.00', $value);
     // }
 
+    public function testSplitElement()
+    {
+        $string = 'Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->setValue('DatiGeneraliDocumento/Causale', $string);
+
+        // 2 times, it should be idempotent
+        $invoice->normalize();
+        $invoice->normalize();
+
+        $causaleCount = $invoice->query('DatiGeneraliDocumento/Causale')->count();
+        $lastChunk = 'lpa qui officia deserunt mollit anim id est laborum.';
+
+        $this->assertEquals('3 lpa qui officia deserunt mollit anim id est laborum.', "$causaleCount $lastChunk");        
+    }
+
     /**
      * Values
      ***************************************************************************

@@ -229,6 +229,10 @@ Restituisce l'oggetto ~\DOMDocument~ relativo alla fattura.
 ** ~normalize()~
 Rimuove gli elementi XML vuoti.
 
+Utilizzato in ~asXML()~ e ~save()~, se non esplicitamente disabilitato.
+
+In ~FatturaElettronica~ divide l'elemento ~DatiGeneraliDocumento/Causale~ in più elementi se il valore supera i 200 caratteri (chunks da 200 caratteri ciascuno).
+
 ** ~query( string $expr, $context = null, bool $registerNodeNS = true )~
 Restituisce una lista di elementi ~\DOMNodeList~ derivante dalla query ~$expr/$context~.
 
