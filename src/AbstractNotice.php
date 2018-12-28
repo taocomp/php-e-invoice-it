@@ -43,9 +43,6 @@ abstract class AbstractNotice extends AbstractDocument
         parent::__construct($file);
 
         if (null === $file) {
-            $fragment = $this->dom->createDocumentFragment();
-            $fragment->appendXML('<?xml-stylesheet type="text/xsl" href="EC_v1.0.xsl"?>');
-            $this->dom->insertBefore($fragment, $this->dom->documentElement);
             $this->dom->documentElement->setAttribute('versione', '1.0');
         }
     }

@@ -378,4 +378,30 @@ class FatturaElettronicaTest extends TestCase
 
         $this->assertFileIsReadable($prefixPath . "/$filename");
     }
+
+    /**
+     * Stylesheet
+     ***************************************************************************
+     */
+    public function testSetStylesheet()
+    {
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->setStylesheet('fatturaPA_v1.2.1.xsl');
+        $xml = $invoice->asXML();
+        $string = '<?xml-stylesheet type="text/xsl" href="fatturaPA_v1.2.1.xsl"?>';
+
+        $this->assertGreaterThan(0, strpos($xml, $string));
+    }
+
+    public function testResetStylesheet()
+    {
+        $invoice = new FatturaElettronica('FPR12');
+        $invoice->setStylesheet('fatturaPA_v1.2.1.xsl');
+        $xml = $invoice->asXML();
+        $invoice->unsetStylesheet();
+        $xml = $invoice->asXML();
+        $string = '<?xml-stylesheet type="text/xsl" href="fatturaPA_v1.2.1.xsl"?>';
+
+        $this->assertFalse(strpos($xml, $string));
+    }
 }

@@ -172,6 +172,17 @@ $invoice->setValuesFromArray('DatiTrasporto', $array);
 
 All but ~setValueToAll~ and ~setValuesToAll~ methods will throw an exception if ~$expr/$context~ don't return just one element.
 
+*** Set/Unset stylesheet
+Set:
+#+BEGIN_SRC 
+$invoice->setStylesheet('/path/to/xsl');
+#+END_SRC
+
+Unset:
+#+BEGIN_SRC 
+$invoice->unsetStylesheet();
+#+END_SRC
+
 *** Save invoice
 Set an optional default destination dir for all invoices:
 #+BEGIN_SRC 
@@ -233,6 +244,16 @@ $notice->setValuesFromInvoice($invoice, 2);
 // Set values
 $notice->setValue('IdentificativoSdI', 1234567);
 $notice->setValue('Esito', EsitoCommittente::EC01);
+#+END_SRC
+*** Set/Unset stylesheet
+Set:
+#+BEGIN_SRC 
+$notice->setStylesheet('/path/to/xsl');
+#+END_SRC
+
+Unset:
+#+BEGIN_SRC 
+$notice->unsetStylesheet();
 #+END_SRC
 
 *** Save notice

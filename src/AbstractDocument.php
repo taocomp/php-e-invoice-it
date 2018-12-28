@@ -39,6 +39,14 @@ abstract class AbstractDocument
     protected $prefixPath = null;
 
     /**
+     * Optional stylesheet href.
+     *
+     * If not null, the "xml-stylesheet" element will be prepended before
+     * the first node.
+     */
+    protected $stylesheetHref = null;
+
+    /**
      * Constructor
      */
     public function __construct( $file = null )
@@ -91,6 +99,50 @@ abstract class AbstractDocument
         return array_pop($classArray);
     }
 
+    protected function insertStylesheet()
+    {
+        if (empty($this->stylesheetHref)) {
+            throw new \Exception("Cannot add stylesheet because href is empty or null");
+        }
+
+        $firstChild = $this->dom->firstChild;
+
+        if ($firstChild->nodeName !== 'xml-stylesheet') {
+            $fragment = $this->dom->createDocumentFragment();
+            $fragment->appendXML("<?xml-stylesheet type=\"text/xsl\" href=\"{$this->stylesheetHref}\"?>");
+            $this->dom->insertBefore($fragment, $this->dom->documentElement);
+        } else {
+            $firstChild->nodeValue = "<?xml-stylesheet type=\"text/xsl\" href=\"{$this->stylesheetHref}\"?>";
+        }
+
+        return $this;
+    }
+
+    protected function removeStylesheet()
+    {
+        $firstChild = $this->dom->firstChild;
+
+        if ($firstChild->nodeName === 'xml-stylesheet') {
+            $this->dom->removeChild($firstChild);
+        }
+
+        return $this;
+    }
+
+    public function setStylesheet( string $href )
+    {
+        $this->stylesheetHref = $href;
+
+        return $this;
+    }
+
+    public function unsetStylesheet()
+    {
+        $this->stylesheetHref = null;
+
+        return $this;
+    }
+
     /**
      * DOMDOCUMENT, DOMXPATH, XML
      ***************************************************************************
@@ -103,6 +155,12 @@ abstract class AbstractDocument
     {
         if (true === $normalize) {
             $this->normalize();
+        }
+
+        if (false === empty($this->stylesheetHref)) {
+            $this->insertStylesheet();
+        } else {
+            $this->removeStylesheet();
         }
 
         return $this->dom->saveXML(null, LIBXML_NOEMPTYTAG);
@@ -283,6 +341,12 @@ abstract class AbstractDocument
 
         if (true === $normalize) {
             $this->normalize();
+        }
+
+        if (false === empty($this->stylesheetHref)) {
+            $this->insertStylesheet();
+        } else {
+            $this->removeStylesheet();
         }
 
         // if (false === $this->dom->save($dest, LIBXML_NOEMPTYTAG)) {
