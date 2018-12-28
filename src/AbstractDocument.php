@@ -472,6 +472,42 @@ abstract class AbstractDocument
     }
 
     /**
+     * Set element count
+     */
+    public function setElementCount( $expr, int $n, $context = null )
+    {
+        $currentList = $this->query($expr, $context);
+        $currentCount = $currentList->count();
+
+        if (0 === $currentCount) {
+            throw new \Exception("Cannot find an element with expr/context: $expr/$context");
+        }
+
+        if ($currentCount === $n) {
+            return $this;
+        }
+
+        if ($currentCount > $n) {
+            $exceeding = $currentCount - $n;
+
+            for ($i = $currentCount; --$i >= $n; ) {
+                $cur = $currentList->item($i);
+                $cur->parentNode->removeChild($cur);
+            }
+        } else {
+            $adding = $n - $currentCount;
+            $element = $currentList->item(0);
+            $nextSibling = $currentList->item($currentCount - 1);
+
+            for ($i = 0; $i < $adding; $i++ ) {
+                $this->addElement($element->cloneNode(true), $element->parentNode, $nextSibling);
+            }
+        }
+        
+        return $this;
+    }
+
+    /**
      * Split an element if its value (as string) is > $splitLen characters.
      */
     public function splitElement( $element, int $splitLen, $context = null )
