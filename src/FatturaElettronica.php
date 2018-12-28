@@ -470,7 +470,7 @@ class FatturaElettronica extends AbstractDocument
      */
     public function normalize()
     {
-        $bodies = $this->query('FatturaElettronicaBody');
+        $bodies = $this->getBodies();
 
         foreach ($bodies as $body) {
             // Split "Causale" if needed
@@ -504,6 +504,14 @@ class FatturaElettronica extends AbstractDocument
         }
 
         return $this;
+    }
+
+    /**
+     * Retrieve all bodies as \DOMNodeList
+     */
+    public function getBodies()
+    {
+        return $this->query('FatturaElettronicaBody');
     }
 
     /**

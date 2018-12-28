@@ -459,7 +459,7 @@ abstract class AbstractDocument
     /**
      * Set same value $value to all elements retrieved through $expr
      */
-    public function setValueToAll( string $expr, $value, $context = null )
+    public function setValueToAll( $expr, $value, $context = null )
     {
         $elements = $this->query($expr, $context);
 
@@ -472,12 +472,14 @@ abstract class AbstractDocument
 
     /**
      * Set values from an associative array. Keys must return just one element.
-     * Array keys are relative to $context.
+     * Array keys are relative to $expr/$context.
      */
-    public function setValues( $context, array $array )
+    public function setValues( $expr, array $array, $context = null )
     {
+        $element = $this->getElement($expr, $context);
+        
         foreach ($array as $k => $v) {
-            $this->setValue($k, $v, $context);
+            $this->setValue($k, $v, $element);
         }
 
         return $this;
@@ -486,28 +488,30 @@ abstract class AbstractDocument
     /**
      * Recursively set values from array
      */
-    public function setValuesFromArray( $context, array $array )
+    public function setValuesFromArray( $expr, array $array, $context = null )
     {
-        $context = $this->getElement($context);
+        $parent = $this->getElement($expr, $context);
         
         foreach ($array as $k => $v) {
             if (true === is_array($v)) {
-                $node = $this->getElement($k, $context);
+                $node = $this->getElement($k, $parent);
                 $this->setValuesFromArray($node, $v);
             } else {
-                $this->setValue($k, $v, $context);
+                $this->setValue($k, $v, $parent);
             }
         }
     }
 
     /**
      * Set values from an associative array. Keys may return N elements.
-     * Array keys are relative to $context.
+     * Array keys are relative to $expr/$context.
      */
-    public function setValuesToAll( $context, array $array )
+    public function setValuesToAll( $expr, array $array, $context = null )
     {
+        $element = $this->getElement($expr, $context);
+        
         foreach ($array as $k => $v) {
-            $this->setValueToAll($k, $v, $context);
+            $this->setValueToAll($k, $v, $element);
         }
 
         return $this;
