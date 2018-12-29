@@ -2,12 +2,12 @@
 
 A PHP package for managing italian e-invoice and notice XML formats:
 - XML management through ~DOMDocument~ and ~DOMXPath~
-- full ~FatturaElettronica~ XML skeleton
+- full ~FatturaElettronica~ (FatturaPA) XML skeleton
 - smart simplified xpath strings for getting/setting values (and for adding/getting/removing elements if needed)
 - multiple bodies (invoice lot)
 - multiple line items (~DettaglioLinee~)
-- XML normalization (remove empty elements)
-- automatically split ~Causale~ in chunks if > 200 characters
+- multiple generic elements with ~setElementCount()~
+- XML normalization: remove empty elements and automatically split ~Causale~ in chunks if > 200 characters
 
 /(Pacchetto PHP per gestire il formato XML di fatture e notifiche come richiesto dal SdI)./
 
