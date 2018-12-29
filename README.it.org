@@ -265,6 +265,14 @@ Di default gli elementi vuoti vengono eliminati prima di stampare la stringa XML
 $invoice->asXML(false);
 #+END_SRC
 
+* Validazione della fattura
+~php-e-invoice-it~ utilizza la libreria [[https://github.com/Slamdunk/php-validatore-fattura-elettronica][Slamdunk/php-validatore-fattura-elettronica]] per la validazione. Se avete installato ~php-e-invoice-it~ con composer ve la ritrovate già, altrimenti dovete scaricarla e includerla manualmente se volete validare le fatture.
+
+Validazione:
+#+BEGIN_SRC 
+$invoice->validate();
+#+END_SRC
+
 * Salvataggio su file
 ** Fattura
 Quando si salva una fattura, di default il nome del file è dato da:

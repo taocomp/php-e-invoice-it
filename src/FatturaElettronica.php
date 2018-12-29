@@ -420,6 +420,8 @@ class FatturaElettronica extends AbstractDocument
         )
     );
 
+    protected $validator = null;
+
     /**
      * Constructor
      */
@@ -481,6 +483,17 @@ class FatturaElettronica extends AbstractDocument
         }
         
         return parent::normalize();
+    }
+
+    public function validate()
+    {
+        if (null === $this->validator) {
+            $this->validator = new \SlamFatturaElettronica\Validator();
+        }
+
+        $this->validator->assertValidXml($this->asXML());
+
+        return $this;
     }
 
     /**

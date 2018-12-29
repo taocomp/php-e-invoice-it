@@ -8,6 +8,7 @@ A PHP package for managing italian e-invoice and notice XML formats:
 - multiple line items (~DettaglioLinee~)
 - multiple generic elements with ~setElementCount()~
 - XML normalization: remove empty elements and automatically split ~Causale~ in chunks if > 200 characters
+- optional ~FatturaElettronica~ validation thanks to [[https://github.com/Slamdunk/php-validatore-fattura-elettronica][Slamdunk/php-validatore-fattura-elettronica]]
 
 /(Pacchetto PHP per gestire il formato XML di fatture e notifiche come richiesto dal SdI)./
 
@@ -181,6 +182,16 @@ $invoice->setStylesheet('/path/to/xsl');
 Unset:
 #+BEGIN_SRC 
 $invoice->unsetStylesheet();
+#+END_SRC
+
+*** Validate invoice
+You need [[https://github.com/Slamdunk/php-validatore-fattura-elettronica][Slamdunk/php-validatore-fattura-elettronica]]. If you install ~php-e-invoice-it~ via-composer, you got it as dependency; otherwise you must download and require it manually.
+#+BEGIN_SRC 
+$invoice->validate();
+#+END_SRC
+An exception is thrown (with a message) if the XML is not valid, for example:
+#+BEGIN_SRC 
+DOMDocument::schemaValidateSource(): Element 'DatiTrasmissione': Missing child element(s). Expected is ( CodiceDestinatario ).
 #+END_SRC
 
 *** Save invoice

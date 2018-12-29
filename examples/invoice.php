@@ -64,7 +64,7 @@ try
     $invoice->setElementCount('DatiRiepilogo', 2, $body2);
     $invoice->setValue('DatiRiepilogo[1]/AliquotaIVA', '22.00', $body2);
     $invoice->setValue('DatiRiepilogo[2]/AliquotaIVA', '10.00', $body2);
-    
+
     // Save invoice
     // $invoice->save();
 

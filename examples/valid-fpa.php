@@ -76,7 +76,7 @@ try
 
     $invoice->removeElement('DatiDDT');
 
-    $invoice->save(true);
+    $invoice->validate()->save(true);
 
     // Show XML
     $xml = $invoice->asXML();

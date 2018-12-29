@@ -7,6 +7,7 @@ namespace Composer\Autoload;
 class ComposerStaticInitaf16f93577e2eb240b38f1fd3d73faca
 {
     public static $files = array (
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
     );
 
@@ -22,6 +23,11 @@ class ComposerStaticInitaf16f93577e2eb240b38f1fd3d73faca
         'T' => 
         array (
             'Taocomp\\Einvoicing\\' => 19,
+        ),
+        'S' => 
+        array (
+            'Symfony\\Polyfill\\Ctype\\' => 23,
+            'SlamFatturaElettronica\\' => 23,
         ),
         'D' => 
         array (
@@ -44,6 +50,14 @@ class ComposerStaticInitaf16f93577e2eb240b38f1fd3d73faca
         'Taocomp\\Einvoicing\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'Symfony\\Polyfill\\Ctype\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'SlamFatturaElettronica\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/slam/php-validatore-fattura-elettronica/lib',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
