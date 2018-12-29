@@ -112,7 +112,7 @@ abstract class AbstractDocument
             $fragment->appendXML("<?xml-stylesheet type=\"text/xsl\" href=\"{$this->stylesheetHref}\"?>");
             $this->dom->insertBefore($fragment, $this->dom->documentElement);
         } else {
-            $firstChild->nodeValue = "<?xml-stylesheet type=\"text/xsl\" href=\"{$this->stylesheetHref}\"?>";
+            $firstChild->nodeValue = "type=\"text/xsl\" href=\"{$this->stylesheetHref}\"";
         }
 
         return $this;

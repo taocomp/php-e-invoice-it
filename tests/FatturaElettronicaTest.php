@@ -382,9 +382,11 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica('FPR12');
         $invoice->setStylesheet('fatturaPA_v1.2.1.xsl');
         $xml = $invoice->asXML();
-        $string = '<?xml-stylesheet type="text/xsl" href="fatturaPA_v1.2.1.xsl"?>';
+        $xml = $invoice->asXML();
 
-        $this->assertGreaterThan(0, strpos($xml, $string));
+        $this->assertEquals(
+            'type="text/xsl" href="fatturaPA_v1.2.1.xsl"',
+            $invoice->getDOM()->firstChild->nodeValue);
     }
 
     public function testResetStylesheet()
