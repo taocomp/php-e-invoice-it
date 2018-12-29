@@ -222,6 +222,24 @@ Prende un determinato elemento individuato da ~$expr/$context~, se ~$expr/$conte
 ** ~removeElement( $element )~
 Rimuove l'elemento ~$element~, se univoco. Altrimenti genera un'eccezione.
 
+** ~setElementCount( $expr, int $n, $context = null )~
+Imposta la cardinalità di un certo elemento. Ad esempio per avere 3 ~DatiRiepilogo~:
+#+BEGIN_SRC 
+$invoice->setElementCount('DatiRiepilogo', 3);
+#+END_SRC
+
+O nel caso di più bodies:
+#+BEGIN_SRC 
+$body2 = $invoice->getBody(2);
+$invoice->setElementCount('DatiRiepilogo', 2, $body2);
+#+END_SRC
+
+Settaggio valori:
+#+BEGIN_SRC 
+$invoice->setValue('DatiRiepilogo[1]/AliquotaIVA', '22.00', $body2);
+$invoice->setValue('DatiRiepilogo[2]/AliquotaIVA', '10.00', $body2);
+#+END_SRC
+
 * Altri metodi comuni a fatture e notifiche
 ** ~getDOM()~
 Restituisce l'oggetto ~\DOMDocument~ relativo alla fattura.
