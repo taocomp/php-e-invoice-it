@@ -440,7 +440,7 @@ abstract class AbstractDocument
         }
         
         $elements = $this->query($expr, $context);
-        $count = $elements->count();
+        $count = $elements->length;
 
         if ($count !== 1) {
             $errSuffix = null === $context ? "" : " (context: {$context->nodeName})";
@@ -477,7 +477,7 @@ abstract class AbstractDocument
     public function setElementCount( $expr, int $n, $context = null )
     {
         $currentList = $this->query($expr, $context);
-        $currentCount = $currentList->count();
+        $currentCount = $currentList->length;
 
         if (0 === $currentCount) {
             throw new \Exception("Cannot find an element with expr/context: $expr/$context");

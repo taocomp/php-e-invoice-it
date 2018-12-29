@@ -64,7 +64,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $list = $invoice->query($tag);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     public function testQueryRelativePathAndNoContext()
@@ -73,7 +73,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $list = $invoice->query($path);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     public function testQueryAbsolutePathAndNoContext()
@@ -82,7 +82,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $list = $invoice->query($path);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     public function testQueryTagWithContext()
@@ -92,7 +92,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $list = $invoice->query($tag, $context);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     public function testQueryRelativePathWithContext()
@@ -102,7 +102,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA01.xml');
         $list = $invoice->query($path, $context);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     public function testCannotQueryAbsolutePathWithContext()
@@ -122,7 +122,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica(__DIR__ . '/files/IT01234567890_FPA03.xml');
         $list = $invoice->query($path, $context);
 
-        $this->assertEquals(1, $list->count());
+        $this->assertEquals(1, $list->length);
     }
     
     /**
@@ -153,7 +153,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica('FPR12');
         $invoice->addBody(2);
         $bodies = $invoice->query('FatturaElettronicaBody');
-        $count = $bodies->count();
+        $count = $bodies->length;
 
         $this->assertEquals(3, $count);
     }
@@ -163,7 +163,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica('FPR12');
         $invoice->addBody(2);
         $invoice->addLineItem(5, 3);
-        $count = $invoice->query("/FatturaElettronicaBody[3]//DettaglioLinee")->count();
+        $count = $invoice->query("/FatturaElettronicaBody[3]//DettaglioLinee")->length;
         
         $this->assertEquals(6, $count);
     }
@@ -178,7 +178,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice->normalize();
         $invoice->normalize();
 
-        $causaleCount = $invoice->query('DatiGeneraliDocumento/Causale')->count();
+        $causaleCount = $invoice->query('DatiGeneraliDocumento/Causale')->length;
         $lastChunk = 'lpa qui officia deserunt mollit anim id est laborum.';
 
         $this->assertEquals('3 lpa qui officia deserunt mollit anim id est laborum.', "$causaleCount $lastChunk");        
@@ -189,7 +189,7 @@ class FatturaElettronicaTest extends TestCase
         $invoice = new FatturaElettronica('FPR12');
         $invoice->setElementCount('ProgressivoInvio', 4);
         $invoice->setElementCount('ProgressivoInvio', 3);
-        $count = $invoice->query('ProgressivoInvio')->count();
+        $count = $invoice->query('ProgressivoInvio')->length;
 
         $this->assertEquals(3, $count);
     }

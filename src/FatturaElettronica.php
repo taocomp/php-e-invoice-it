@@ -474,7 +474,7 @@ class FatturaElettronica extends AbstractDocument
 
         foreach ($bodies as $body) {
             // Split "Causale" if needed
-            $causaleCount = $this->query('DatiGeneraliDocumento/Causale', $body)->count();
+            $causaleCount = $this->query('DatiGeneraliDocumento/Causale', $body)->length;
             if ($causaleCount === 1) {
                 $this->splitElement('DatiGeneraliDocumento/Causale', 200, $body);
             }
