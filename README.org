@@ -307,5 +307,7 @@ From inside the project root dir:
 * Credits
 We want to thank all contributors of [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettronica]] who have shared their snippets and any available info.
 
+Thanks to @Slamdunk for [[https://github.com/Slamdunk/php-validatore-fattura-elettronica][Slamdunk/php-validatore-fattura-elettronica]]!
+
 * License
 GPLv3.
