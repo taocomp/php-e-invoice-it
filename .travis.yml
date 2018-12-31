@@ -1,0 +1,26 @@
+language: php
+
+sudo: false
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.0
+    - php: 7.1
+    - php: 7.2
+      env: CODE_COVERAGE_ARGS="--coverage-clover ./clover.xml
+    - php: 7.3
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+install:
+  - if [ "$CODE_COVERAGE_ARGS" != "" ]; then phpenv config-rm xdebug.ini || true; fi
+  - composer install --no-interaction --prefer-dist
+
+script:
+  - vendor/bin/phpunit $CODE_COVERAGE_ARGS tests/FatturaElettronicaTest.php
+
+notifications:
+  email: false
