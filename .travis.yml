@@ -16,7 +16,7 @@ cache:
     - $HOME/.composer/cache
 
 install:
-  - if [ "$CODE_COVERAGE_ARGS" != "" ]; then phpenv config-rm xdebug.ini || true; fi
+  - if [ "$CODE_COVERAGE_ARGS" = "" ]; then phpenv config-rm xdebug.ini || true; fi
   - composer install --no-interaction --prefer-dist
 
 script:
