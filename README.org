@@ -1,5 +1,8 @@
 #+TITLE: PHP E-invoice It
 
+|Build status|[[https://travis-ci.org/taocomp/php-e-invoice-it.svg?branch=master]]|[[https://travis-ci.org/taocomp/php-e-invoice-it]]|
+|Packagist|[[https://img.shields.io/packagist/v/taocomp/php-e-invoice-it.svg]]|[[https://packagist.org/packages/taocomp/php-e-invoice-it]]|
+
 A PHP package for managing italian e-invoice and notice XML formats:
 - XML management through ~DOMDocument~ and ~DOMXPath~
 - full ~FatturaElettronica~ (FatturaPA) XML skeleton
