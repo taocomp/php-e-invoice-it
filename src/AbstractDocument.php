@@ -551,7 +551,8 @@ abstract class AbstractDocument
      */
     public function setValue( $expr, $value, $context = null )
     {
-        $this->getElement($expr, $context)->nodeValue = $value;
+        if (!is_null($value))
+            $this->getElement($expr, $context)->nodeValue = $value;
 
         return $this;
     }
