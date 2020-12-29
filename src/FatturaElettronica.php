@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2018 Taocomp s.r.l.s. <https://taocomp.com>
+ * Copyright (C) 2018-2021 Taocomp s.r.l.s. <https://taocomp.com>
  *
  * This file is part of php-e-invoice-it.
  *
@@ -47,151 +47,91 @@ class FatturaElettronica extends AbstractDocument
      * Invoice elements
      */
     public static $templateArray = array(
-        'FatturaElettronicaHeader' => array(
-            'DatiTrasmissione' => array(
-                'IdTrasmittente' => array(
-                    'IdPaese' => '',
-                    'IdCodice' => ''
-                ),
-                'ProgressivoInvio' => '',
+        'FatturaElettronicaHeader' => [
+            'DatiTrasmissione' => [
+                'IdTrasmittente'      => ['IdPaese' => '', 'IdCodice' => ''],
+                'ProgressivoInvio'    => '',
                 'FormatoTrasmissione' => '',
-                'CodiceDestinatario' => '',
-                'ContattiTrasmittente' => array(
-                    'Telefono' => '',
-                    'Email' => ''
-                ),
-                'PECDestinatario' => ''
-            ),
-            'CedentePrestatore' => array(
-                'DatiAnagrafici' => array(
-                    'IdFiscaleIVA' => array(
-                        'IdPaese' => '',
-                        'IdCodice' => ''
-                    ),
-                    'CodiceFiscale' => '',
-                    'Anagrafica' => array(
-                        'Denominazione' => '',
-                        'Nome' => '',
-                        'Cognome' => '',
-                        'Titolo' => '',
-                        'CodEORI' => ''
-                    ),
-                    'AlboProfessionale' => '',
-                    'ProvinciaAlbo' => '',
-                    'NumeroIscrizioneAlbo' => '',
-                    'DataIscrizioneAlbo' => '',
-                    'RegimeFiscale' => '',
-                ),
-                'Sede' => array(
-                    'Indirizzo' => '',
+                'CodiceDestinatario'  => '',
+                'PECDestinatario'     => '',
+            ],
+            'CedentePrestatore' => [
+                'IdFiscaleIVA'  => ['IdPaese' => '', 'IdCodice' => ''],
+                'CodiceFiscale' => '',
+                'Denominazione' => '',
+                'Nome'          => '',
+                'Cognome'       => '',
+                'Sede' => [
+                    'Indirizzo'    => '',
                     'NumeroCivico' => '',
-                    'CAP' => '',
-                    'Comune' => '',
-                    'Provincia' => '',
-                    'Nazione' => ''
-                ),
-                'StabileOrganizzazione' => array(
-                    'Indirizzo' => '',
+                    'CAP'          => '',
+                    'Comune'       => '',
+                    'Provincia'    => '',
+                    'Nazione'      => '',
+                ],
+                'StabileOrganizzazione' => [
+                    'Indirizzo'    => '',
                     'NumeroCivico' => '',
-                    'CAP' => '',
-                    'Comune' => '',
-                    'Provincia' => '',
-                    'Nazione' => ''
-                ),
-                'IscrizioneREA' => array(
-                    'Ufficio' => '',
-                    'NumeroREA' => '',
-                    'CapitaleSociale' => '',
-                    'SocioUnico' => '',
-                    'StatoLiquidazione' => ''
-                ),
-                'Contatti' => array(
-                    'Telefono' => '',
-                    'Fax' => '',
-                    'Email' => ''
-                ),
-                'RiferimentoAmministrazione' => ''
-            ),
-            // Da valorizzare qualora il cedente/prestatore si avvalga di un
-            // rappresentante fiscale in Italia, ai sensi del DPR 633 del 1972
-            // e successive modifiche ed integrazioni.
-            'RappresentanteFiscale' => array(
-                'DatiAnagrafici' => array(
-                    'IdFiscaleIVA' => array(
-                        'IdPaese' => '',
-                        'IdCodice' => ''
-                    ),
-                    'CodiceFiscale' => '',
-                    'Anagrafica' => array(
-                        'Denominazione' => '',
-                        'Nome' => '',
-                        'Cognome' => '',
-                        'Titolo' => '',
-                        'CodEORI' => ''
-                    ),
-                ),                
-            ),
-            'CessionarioCommittente' => array(
-                'DatiAnagrafici' => array(
-                    'IdFiscaleIVA' => array(
-                        'IdPaese' => '',
-                        'IdCodice' => ''
-                    ),
-                    'CodiceFiscale' => '',
-                    'Anagrafica' => array(
-                        'Denominazione' => '',
-                        'Nome' => '',
-                        'Cognome' => '',
-                        'Titolo' => '',
-                        'CodEORI' => ''
-                    )
-                ),
-                'Sede' => array(
-                    'Indirizzo' => '',
-                    'NumeroCivico' => '',
-                    'CAP' => '',
-                    'Comune' => '',
-                    'Provincia' => '',
-                    'Nazione' => ''
-                ),
-                'StabileOrganizzazione' => array(
-                    'Indirizzo' => '',
-                    'NumeroCivico' => '',
-                    'CAP' => '',
-                    'Comune' => '',
-                    'Provincia' => '',
-                    'Nazione' => ''
-                ),
-                'RappresentanteFiscale' => array(
-                    'IdFiscaleIVA' => array(
-                        'IdPaese' => '',
-                        'IdCodice' => ''
-                    ),
+                    'CAP'          => '',
+                    'Comune'       => '',
+                    'Provincia'    => '',
+                    'Nazione'      => '',
+                ],
+                // Da valorizzare qualora il cedente/prestatore si avvalga di un
+                // rappresentante fiscale in Italia, ai sensi del DPR 633 del 1972
+                // e successive modifiche ed integrazioni.
+                'RappresentanteFiscale' => [
+                    'IdFiscaleIVA'  => ['IdPaese' => '', 'IdCodice' => ''],
                     'Denominazione' => '',
-                    'Nome' => '',
-                    'Cognome' => ''
-                )
-            ),
-            'TerzoIntermediarioOSoggettoEmittente' => array(
-                'DatiAnagrafici' => array(
-                    'IdFiscaleIVA' => array(
-                        'IdPaese' => '',
-                        'IdCodice' => ''
-                    ),
+                    'Nome'          => '',
+                    'Cognome'       => '',
+                ],
+                'IscrizioneREA' => [
+                    'Ufficio'           => '',
+                    'NumeroREA'         => '',
+                    'CapitaleSociale'   => '',
+                    'SocioUnico'        => '',
+                    'StatoLiquidazione' => ''
+                ],
+                'RegimeFiscale' => '',
+            ],
+            'CessionarioCommittente' => [
+                'IdentificativiFiscali' => [
+                    'IdFiscaleIVA'  => ['IdPaese' => '', 'IdCodice' => ''],
                     'CodiceFiscale' => '',
-                    'Anagrafica' => array(
+                ],
+                'AltriDatiIdentificativi' => [
+                    'Denominazione' => '',
+                    'Nome'          => '',
+                    'Cognome'       => '',
+                    'Sede'          => [
+                        'Indirizzo'    => '',
+                        'NumeroCivico' => '',
+                        'CAP'          => '',
+                        'Comune'       => '',
+                        'Provincia'    => '',
+                        'Nazione'      => '',
+                    ],
+                    'StabileOrganizzazione' => [
+                        'Indirizzo'    => '',
+                        'NumeroCivico' => '',
+                        'CAP'          => '',
+                        'Comune'       => '',
+                        'Provincia'    => '',
+                        'Nazione'      => '',
+                    ],
+                    'RappresentanteFiscale' => [
+                        'IdFiscaleIVA'  => ['IdPaese' => '', 'IdCodice' => ''],
                         'Denominazione' => '',
-                        'Nome' => '',
-                        'Cognome' => '',
-                        'Titolo' => '',
-                        'CodEORI' => ''
-                    )
-                ),                
-            ),
+                        'Nome'          => '',
+                        'Cognome'       => '',
+                    ],
+                ],
+            ],
             // Nei casi di documenti emessi da un soggetto diverso dal
             // cedente/prestatore va valorizzato l’elemento seguente.
             'SoggettoEmittente' => ''
-        ),
+        ],
         'FatturaElettronicaBody' => array(
             'DatiGenerali' => array(
                 'DatiGeneraliDocumento' => array(
@@ -208,215 +148,228 @@ class FatturaElettronica extends AbstractDocument
                     'Divisa' => '',
                     'Data' => '',
                     'Numero' => '',
-                    'DatiRitenuta' => array(
-                        'TipoRitenuta' => '',
-                        'ImportoRitenuta' => '',
-                        'AliquotaRitenuta' => '',
-                        'CausalePagamento' => ''
-                    ),
-                    'DatiBollo' => array(
-                        'BolloVirtuale' => '',
-                        'ImportoBollo' => ''
-                    ),
-                    'DatiCassaPrevidenziale' => array(
-                        'TipoCassa' => '',
-                        'AlCassa' => '',
-                        'ImportoContributoCassa' => '',
-                        'ImponibileCassa' => '',
-                        'AliquotaIVA' => '',
-                        'Ritenuta' => '',
-                        'Natura' => '',
-                        'RiferimentoAmministrazione' => ''
-                    ),
-                    'ScontoMaggiorazione' => array(
-                        'Tipo' => '',
-                        'Percentuale' => '',
-                        'Importo' => ''
-                    ),
-                    'ImportoTotaleDocumento' => '',
-                    'Arrotondamento' => '',
-                    'Causale' => '',
-                    'Art73' => ''
-                ),
-                'DatiOrdineAcquisto' => array(
-                    'RiferimentoNumeroLinea' => '',
-                    'IdDocumento' => '',
-                    'Data' => '',
-                    'NumItem' => '',
-                    'CodiceCommessaConvenzione' => '',
-                    'CodiceCUP' => '',
-                    'CodiceCIG' => ''
-                ),
-                'DatiContratto' => array(
-                    'RiferimentoNumeroLinea' => '',
-                    'IdDocumento' => '',
-                    'Data' => '',
-                    'NumItem' => '',
-                    'CodiceCommessaConvenzione' => '',
-                    'CodiceCUP' => '',
-                    'CodiceCIG' => ''
-                ),
-                'DatiConvenzione' => array(
-                    'RiferimentoNumeroLinea' => '',
-                    'IdDocumento' => '',
-                    'Data' => '',
-                    'NumItem' => '',
-                    'CodiceCommessaConvenzione' => '',
-                    'CodiceCUP' => '',
-                    'CodiceCIG' => ''
-                ),
-                'DatiRicezione' => array(
-                    'RiferimentoNumeroLinea' => '',
-                    'IdDocumento' => '',
-                    'Data' => '',
-                    'NumItem' => '',
-                    'CodiceCommessaConvenzione' => '',
-                    'CodiceCUP' => '',
-                    'CodiceCIG' => ''
-                ),
-                'DatiFattureCollegate' => array(
-                    'RiferimentoNumeroLinea' => '',
-                    'IdDocumento' => '',
-                    'Data' => '',
-                    'NumItem' => '',
-                    'CodiceCommessaConvenzione' => '',
-                    'CodiceCUP' => '',
-                    'CodiceCIG' => ''
-                ),
-                'DatiSAL' => array(
-                    'RiferimentoBase' => ''
-                ),
-                'DatiDDT' => array(
-                    'NumeroDDT' => '',
-                    'DataDDT' => '',
-                    'RiferimentoNumeroLinea' => ''
-                ),
-                'DatiTrasporto' => array(
-                    'DatiAnagraficiVettore' => array(
-                        'IdFiscaleIVA' => array(
-                            'IdPaese' => '',
-                            'IdCodice' => ''
-                        ),
-                        'CodiceFiscale' => '',
-                        'Anagrafica' => array(
-                            'Denominazione' => '',
-                            'Nome' => '',
-                            'Cognome' => '',
-                            'Titolo' => '',
-                            'CodEORI' => ''
-                        ),
-                        'NumeroLicenzaGuida' => ''
-                    ),
-                    'MezzoTrasporto' => '',
-                    'CausaleTrasporto' => '',
-                    'NumeroColli' => '',
-                    'Descrizione' => '',
-                    'UnitaMisuraPeso' => '',
-                    'PesoLordo' => '',
-                    'PesoNetto' => '',
-                    'DataOraRitiro' => '',
-                    'DataInizioTrasporto' => '',
-                    'TipoResa' => '',
-                    'IndirizzoResa' => array(
-                        'Indirizzo' => '',
-                        'NumeroCivico' => '',
-                        'CAP' => '',
-                        'Comune' => '',
-                        'Provincia' => '',
-                        'Nazione' => ''
-                    ),
-                    'DataOraConsegna' => '',
-                ),
-                'FatturaPrincipale' => array(
-                    'NumeroFatturaPrincipale' => '',
-                    'DataFatturaPrincipale' => ''
+                    'BolloVirtuale' => '',
+                    'DatiFatturaRettificata' => [
+                        'NumeroFR' => '',
+                        'DataFR' => '',
+                        'ElementiRettificati' => '',
+                    ]
+
+                    // 'DatiRitenuta' => array(
+                    //     'TipoRitenuta' => '',
+                    //     'ImportoRitenuta' => '',
+                    //     'AliquotaRitenuta' => '',
+                    //     'CausalePagamento' => ''
+                    // ),
+                    // 'DatiBollo' => array(
+                    //     'BolloVirtuale' => '',
+                    //     'ImportoBollo' => ''
+                    // ),
+                    // 'DatiCassaPrevidenziale' => array(
+                    //     'TipoCassa' => '',
+                    //     'AlCassa' => '',
+                    //     'ImportoContributoCassa' => '',
+                    //     'ImponibileCassa' => '',
+                    //     'AliquotaIVA' => '',
+                    //     'Ritenuta' => '',
+                    //     'Natura' => '',
+                    //     'RiferimentoAmministrazione' => ''
+                    // ),
+                    // 'ScontoMaggiorazione' => array(
+                    //     'Tipo' => '',
+                    //     'Percentuale' => '',
+                    //     'Importo' => ''
+                    // ),
+                    // 'ImportoTotaleDocumento' => '',
+                    // 'Arrotondamento' => '',
+                    // 'Causale' => '',
+                    // 'Art73' => ''
                 )
+                // 'DatiOrdineAcquisto' => array(
+                //     'RiferimentoNumeroLinea' => '',
+                //     'IdDocumento' => '',
+                //     'Data' => '',
+                //     'NumItem' => '',
+                //     'CodiceCommessaConvenzione' => '',
+                //     'CodiceCUP' => '',
+                //     'CodiceCIG' => ''
+                // ),
+                // 'DatiContratto' => array(
+                //     'RiferimentoNumeroLinea' => '',
+                //     'IdDocumento' => '',
+                //     'Data' => '',
+                //     'NumItem' => '',
+                //     'CodiceCommessaConvenzione' => '',
+                //     'CodiceCUP' => '',
+                //     'CodiceCIG' => ''
+                // ),
+                // 'DatiConvenzione' => array(
+                //     'RiferimentoNumeroLinea' => '',
+                //     'IdDocumento' => '',
+                //     'Data' => '',
+                //     'NumItem' => '',
+                //     'CodiceCommessaConvenzione' => '',
+                //     'CodiceCUP' => '',
+                //     'CodiceCIG' => ''
+                // ),
+                // 'DatiRicezione' => array(
+                //     'RiferimentoNumeroLinea' => '',
+                //     'IdDocumento' => '',
+                //     'Data' => '',
+                //     'NumItem' => '',
+                //     'CodiceCommessaConvenzione' => '',
+                //     'CodiceCUP' => '',
+                //     'CodiceCIG' => ''
+                // ),
+                // 'DatiFattureCollegate' => array(
+                //     'RiferimentoNumeroLinea' => '',
+                //     'IdDocumento' => '',
+                //     'Data' => '',
+                //     'NumItem' => '',
+                //     'CodiceCommessaConvenzione' => '',
+                //     'CodiceCUP' => '',
+                //     'CodiceCIG' => ''
+                // ),
+                // 'DatiSAL' => array(
+                //     'RiferimentoBase' => ''
+                // ),
+                // 'DatiDDT' => array(
+                //     'NumeroDDT' => '',
+                //     'DataDDT' => '',
+                //     'RiferimentoNumeroLinea' => ''
+                // ),
+                // 'DatiTrasporto' => array(
+                //     'DatiAnagraficiVettore' => array(
+                //         'IdFiscaleIVA' => array(
+                //             'IdPaese' => '',
+                //             'IdCodice' => ''
+                //         ),
+                //         'CodiceFiscale' => '',
+                //         'Anagrafica' => array(
+                //             'Denominazione' => '',
+                //             'Nome' => '',
+                //             'Cognome' => '',
+                //             'Titolo' => '',
+                //             'CodEORI' => ''
+                //         ),
+                //         'NumeroLicenzaGuida' => ''
+                //     ),
+                //     'MezzoTrasporto' => '',
+                //     'CausaleTrasporto' => '',
+                //     'NumeroColli' => '',
+                //     'Descrizione' => '',
+                //     'UnitaMisuraPeso' => '',
+                //     'PesoLordo' => '',
+                //     'PesoNetto' => '',
+                //     'DataOraRitiro' => '',
+                //     'DataInizioTrasporto' => '',
+                //     'TipoResa' => '',
+                //     'IndirizzoResa' => array(
+                //         'Indirizzo' => '',
+                //         'NumeroCivico' => '',
+                //         'CAP' => '',
+                //         'Comune' => '',
+                //         'Provincia' => '',
+                //         'Nazione' => ''
+                //     ),
+                //     'DataOraConsegna' => '',
+                // ),
+                // 'FatturaPrincipale' => array(
+                //     'NumeroFatturaPrincipale' => '',
+                //     'DataFatturaPrincipale' => ''
+                // )
             ),
             'DatiBeniServizi' => array(
-                'DettaglioLinee' => array(
-                    'NumeroLinea' => '',
-                    'TipoCessionePrestazione' => '',
-                    'CodiceArticolo' => array(
-                        'CodiceTipo' => '',
-                        'CodiceValore' => ''
-                    ),
-                    'Descrizione' => '',
-                    'Quantita' => '',
-                    'UnitaMisura' => '',
-                    'DataInizioPeriodo' => '',
-                    'DataFinePeriodo' => '',
-                    'PrezzoUnitario' => '',
-                    'ScontoMaggiorazione' => array(
-                        'Tipo' => '',
-                        'Percentuale' => '',
-                        'Importo' => ''
-                    ),
-                    'PrezzoTotale' => '',
-                    'AliquotaIVA' => '',
-                    'Ritenuta' => '',
-                    'Natura' => '',
-                    'RiferimentoAmministrazione' => '',
-                    'AltriDatiGestionali' => array(
-                        'TipoDato' => '',
-                        'RiferimentoTesto' => '',
-                        'RiferimentoNumero' => '',
-                        'RiferimentoData' => ''
-                    )
-                ),
-                'DatiRiepilogo' => array(
-                    'AliquotaIVA' => '',
-                    'Natura' => '',
-                    'SpeseAccessorie' => '',
-                    'Arrotondamento' => '',
-                    'ImponibileImporto' => '',
-                    'Imposta' => '',
-                    // I IVA ad esigibilità immediata
-                    // D IVA ad esigibilità differita
-                    // S scissione dei pagamenti
-                    'EsigibilitaIVA' => '',
-                    'RiferimentoNormativo' => ''
-                )
+                'Descrizione' => '',
+                'Importo' => '',
+                'DatiIVA' => ['Imposta' => '', 'Aliquota' => ''],
+                'Natura' => '',
+                'RiferimentoNormativo' => ''
+
+                // 'DettaglioLinee' => array(
+                //     'NumeroLinea' => '',
+                //     'TipoCessionePrestazione' => '',
+                //     'CodiceArticolo' => array(
+                //         'CodiceTipo' => '',
+                //         'CodiceValore' => ''
+                //     ),
+                //     'Descrizione' => '',
+                //     'Quantita' => '',
+                //     'UnitaMisura' => '',
+                //     'DataInizioPeriodo' => '',
+                //     'DataFinePeriodo' => '',
+                //     'PrezzoUnitario' => '',
+                //     'ScontoMaggiorazione' => array(
+                //         'Tipo' => '',
+                //         'Percentuale' => '',
+                //         'Importo' => ''
+                //     ),
+                //     'PrezzoTotale' => '',
+                //     'AliquotaIVA' => '',
+                //     'Ritenuta' => '',
+                //     'Natura' => '',
+                //     'RiferimentoAmministrazione' => '',
+                //     'AltriDatiGestionali' => array(
+                //         'TipoDato' => '',
+                //         'RiferimentoTesto' => '',
+                //         'RiferimentoNumero' => '',
+                //         'RiferimentoData' => ''
+                //     )
+                // ),
+                // 'DatiRiepilogo' => array(
+                //     'AliquotaIVA' => '',
+                //     'Natura' => '',
+                //     'SpeseAccessorie' => '',
+                //     'Arrotondamento' => '',
+                //     'ImponibileImporto' => '',
+                //     'Imposta' => '',
+                //     // I IVA ad esigibilità immediata
+                //     // D IVA ad esigibilità differita
+                //     // S scissione dei pagamenti
+                //     'EsigibilitaIVA' => '',
+                //     'RiferimentoNormativo' => ''
+                // )
             ),
-            // Presenti nei casi di cessioni tra paesi membri di mezzi di
-            // trasporto nuovi. Dati relativi ai veicoli di cui
-            // all’art. 38, comma 4 del DL 331 del 1993.
-            'DatiVeicoli' => array(
-                'Data' => '',
-                'TotalePercorso' => ''
-            ),
-            'DatiPagamento' => array(
-                'CondizioniPagamento' => '',
-                'DettaglioPagamento' => array(
-                    'Beneficiario' => '',
-                    'ModalitaPagamento' => '',
-                    'DataRiferimentoTerminiPagamento' => '',
-                    'GiorniTerminiPagamento' => '',
-                    'DataScadenzaPagamento' => '',
-                    'ImportoPagamento' => '',
-                    'CodUfficioPostale' => '',
-                    'CognomeQuietanzante' => '',
-                    'NomeQuietanzante' => '',
-                    'CFQuietanzante' => '',
-                    'TitoloQuietanzante' => '',
-                    'IstitutoFinanziario' => '',
-                    'IBAN' => '',
-                    'ABI' => '',
-                    'CAB' => '',
-                    'BIC' => '',
-                    'ScontoPagamentoAnticipato' => '',
-                    'DataLimitePagamentoAnticipato' => '',
-                    'PenalitaPagamentiRitardati' => '',
-                    'DataDecorrenzaPenale' => '',
-                    'CodicePagamento' => ''
-                )
-            ),
-            'Allegati' => array(
+            // // Presenti nei casi di cessioni tra paesi membri di mezzi di
+            // // trasporto nuovi. Dati relativi ai veicoli di cui
+            // // all’art. 38, comma 4 del DL 331 del 1993.
+            // 'DatiVeicoli' => array(
+            //     'Data' => '',
+            //     'TotalePercorso' => ''
+            // ),
+            // 'DatiPagamento' => array(
+            //     'CondizioniPagamento' => '',
+            //     'DettaglioPagamento' => array(
+            //         'Beneficiario' => '',
+            //         'ModalitaPagamento' => '',
+            //         'DataRiferimentoTerminiPagamento' => '',
+            //         'GiorniTerminiPagamento' => '',
+            //         'DataScadenzaPagamento' => '',
+            //         'ImportoPagamento' => '',
+            //         'CodUfficioPostale' => '',
+            //         'CognomeQuietanzante' => '',
+            //         'NomeQuietanzante' => '',
+            //         'CFQuietanzante' => '',
+            //         'TitoloQuietanzante' => '',
+            //         'IstitutoFinanziario' => '',
+            //         'IBAN' => '',
+            //         'ABI' => '',
+            //         'CAB' => '',
+            //         'BIC' => '',
+            //         'ScontoPagamentoAnticipato' => '',
+            //         'DataLimitePagamentoAnticipato' => '',
+            //         'PenalitaPagamentiRitardati' => '',
+            //         'DataDecorrenzaPenale' => '',
+            //         'CodicePagamento' => ''
+            //     )
+            // ),
+            'Allegati' => [
                 'NomeAttachment' => '',
                 'AlgoritmoCompressione' => '',
                 'FormatoAttachment' => '',
                 'DescrizioneAttachment' => '',
                 'Attachment' => ''
-            )
+            ]
         )
     );
 
@@ -472,16 +425,16 @@ class FatturaElettronica extends AbstractDocument
      */
     public function normalize()
     {
-        $bodies = $this->getBodies();
+        // 2020 12 29: no "causale" in v1.6.2
+        // $bodies = $this->getBodies();
+        // foreach ($bodies as $body) {
+        //     // Split "Causale" if needed
+        //     $causaleCount = $this->query('DatiGeneraliDocumento/Causale', $body)->length;
+        //     if ($causaleCount === 1) {
+        //         $this->splitElement('DatiGeneraliDocumento/Causale', 200, $body);
+        //     }
+        // }
 
-        foreach ($bodies as $body) {
-            // Split "Causale" if needed
-            $causaleCount = $this->query('DatiGeneraliDocumento/Causale', $body)->length;
-            if ($causaleCount === 1) {
-                $this->splitElement('DatiGeneraliDocumento/Causale', 200, $body);
-            }
-        }
-        
         return parent::normalize();
     }
 
@@ -511,7 +464,7 @@ class FatturaElettronica extends AbstractDocument
         }
 
         $body = $this->getBody();
-        
+
         for ($i = 0; $i < $n; $i++) {
             $this->addElement($body->cloneNode(true), '/');
         }

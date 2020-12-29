@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2018 Taocomp s.r.l.s. <https://taocomp.com>
+ * Copyright (C) 2018-2021 Taocomp s.r.l.s. <https://taocomp.com>
  *
  * This file is part of php-e-invoice-it.
  *
@@ -87,7 +87,7 @@ abstract class AbstractDocument
             throw new \Exception("File '$file' not found or not readable");
         }
     }
-    
+
     /**
      * Returns document class name
      *
@@ -205,10 +205,10 @@ abstract class AbstractDocument
     public function query( string $expr, $context = null, bool $registerNodeNS = true )
     {
         $strpos = strpos($expr, '/');
-        
+
         if (false === $strpos) {
             $expr = "//$expr";
-            
+
             if (null !== $context) {
                 $expr = ".$expr";
             }
@@ -251,7 +251,7 @@ abstract class AbstractDocument
     {
         return static::$defaultPrefixPath;
     }
-    
+
     /**
      * Get filename
      */
@@ -259,7 +259,7 @@ abstract class AbstractDocument
     {
         return $this->filename;
     }
-    
+
     /**
      * Set filename
      */
@@ -324,7 +324,7 @@ abstract class AbstractDocument
         if (false === $prefixPath) {
             throw new \Exception("Cannot set a valid prefixPath ('$prefixPath')");
         }
-        
+
         $filename = $this->getFilename();
 
         if (false === is_string($filename) || empty($filename)) {
@@ -410,7 +410,7 @@ abstract class AbstractDocument
     public function addElementsFromArray( $parent, array $array )
     {
         $parent = $this->getElement($parent);
-        
+
         foreach ($array as $k => $v) {
             if (true === is_array($v)) {
                 $node = $this->dom->createElement($k);
@@ -438,7 +438,7 @@ abstract class AbstractDocument
         if (null !== $context) {
             $context = $this->getElement($context);
         }
-        
+
         $elements = $this->query($expr, $context);
         $count = $elements->length;
 
@@ -503,7 +503,7 @@ abstract class AbstractDocument
                 $this->addElement($element->cloneNode(true), $element->parentNode, $nextSibling);
             }
         }
-        
+
         return $this;
     }
 
@@ -577,7 +577,7 @@ abstract class AbstractDocument
     public function setValues( $expr, array $array, $context = null )
     {
         $element = $this->getElement($expr, $context);
-        
+
         foreach ($array as $k => $v) {
             $this->setValue($k, $v, $element);
         }
@@ -591,7 +591,7 @@ abstract class AbstractDocument
     public function setValuesFromArray( $expr, array $array, $context = null )
     {
         $parent = $this->getElement($expr, $context);
-        
+
         foreach ($array as $k => $v) {
             if (true === is_array($v)) {
                 $node = $this->getElement($k, $parent);
@@ -609,7 +609,7 @@ abstract class AbstractDocument
     public function setValuesToAll( $expr, array $array, $context = null )
     {
         $element = $this->getElement($expr, $context);
-        
+
         foreach ($array as $k => $v) {
             $this->setValueToAll($k, $v, $element);
         }
