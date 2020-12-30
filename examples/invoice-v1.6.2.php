@@ -1,5 +1,8 @@
 <?php
 
+// The XML generated from this PHP script has been correctly validated by SdI
+// (https://ivaservizi.agenziaentrate.gov.it/ser/fatturewizard/#/controllo)
+
 use \Taocomp\Einvoicing\FatturaElettronica;
 use \Taocomp\Einvoicing\EsitoCommittente;
 
@@ -7,70 +10,47 @@ try
 {
     require_once(__DIR__ . '/../vendor/autoload.php');
 
-    // --------------------------------------------------------------
-    // Invoice
-    // --------------------------------------------------------------
+    // sample data
+    require_once(__DIR__ . '/data.php');
 
-    // Create a new FPR12 invoice with 2 bodies
     $invoice = new FatturaElettronica('FPR12');
-    $invoice->addBody(2);
-    $invoice->addLineItem(3, 2);
 
-    // Set single value
-    $invoice->setValue('ProgressivoInvio', random_int(20000,99999));
+    $lineItemCount = 5;
+    $invoice->setLineItemCount($lineItemCount);
 
-    // Set multiple values
-    $invoice->setValues('IdTrasmittente', array(
-        'IdCodice' => '09876543210',
-        'IdPaese' => 'IT'
-    ));
-    $invoice->setValues('CedentePrestatore', array(
-        'IdCodice' => '09876543210',
-        'IdPaese' => 'IT',
-        'Sede/Indirizzo' => 'VIA UNIVERSO 1'
-    ));
-    $invoice->setValues('CessionarioCommittente', array(
-        // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
-        'DatiAnagrafici/CodiceFiscale' => '01234567890',
-        // Anagrafica/Denominazione, somewhere inside CessionarioCommittente
-        'Anagrafica/Denominazione' => 'BETA SRL'
-    ));
+    // Dati Trasmissione
+    $invoice->setValues('DatiTrasmissione', $DatiTrasmissione);
+    $invoice->setValue('ProgressivoInvio', '00001');
+    $invoice->setValue('CodiceDestinatario', '0000000');
+    $invoice->setValue('PECDestinatario', 'betagamma@pec.it');
 
-    // Add elements
-    // $invoice->addElement('PECDestinatario', 'DatiTrasmissione');
-    // $invoice->setValue('PECDestinatario', 'pec@example.com');
+    // Cedente Prestatore
+    $invoice->setValues('CedentePrestatore', $CedentePrestatore);
 
-    // Add elements from array
-    $body = $invoice->getBody();
-    $datiGeneraliDocumento = $invoice->getElement('DatiGeneraliDocumento', $body);
-    $invoice->addElementsFromArray($datiGeneraliDocumento, array(
-        'DatiRitenuta' => array(
-            'TipoRitenuta' => '',
-            'ImportoRitenuta' => '23.00',
-            'AliquotaRitenuta' => ''
-        )
-    ));
+    // Cessionario Committente
+    $invoice->setValues('CessionarioCommittente', $CessionarioCommittente);
 
-    // Set values for second body
-    $body2 = $invoice->getBody(2);
-    $invoice->setValue('Numero', 44, $body2);
-    $invoice->setValue('DatiGeneraliDocumento/Data', '2018-12-12', $body2);
+    // Dati Generali Documento
+    $invoice->setValues('DatiGeneraliDocumento', $DatiGeneraliDocumento);
 
-    // Set a big "Causale" in second body
-    $causale = 'Lorem ipsum dolor sit amet, consectetur adipisci elit, sed eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur. Quis aute iure reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
-    $invoice->setValue('DatiGeneraliDocumento/Causale', $causale, $body2);
+    // Dati Ordine Acquisto
+    $invoice->setValues('DatiOrdineAcquisto', $DatiOrdineAcquisto);
 
-    // 2 DatiRiepilogo for second body
-    $invoice->setElementCount('DatiRiepilogo', 2, $body2);
-    $invoice->setValue('DatiRiepilogo[1]/AliquotaIVA', '22.00', $body2);
-    $invoice->setValue('DatiRiepilogo[2]/AliquotaIVA', '10.00', $body2);
+    // Dati Trasporto
+    $invoice->setValues('DatiTrasporto', $DatiTrasporto);
 
-    // Save invoice
-    // $invoice->save();
+    // Dettaglio Linee
+    for ($i = 1; $i <= $lineItemCount; $i++ ) {
+        $invoice->setValues("DettaglioLinee[$i]", $DettaglioLinee[$i]);
+    }
 
-    // Show XML
+    // Dati Riepilogo
+    $invoice->setValues('DatiRiepilogo', $DatiRiepilogo);
+
+    // Dati Pagamento
+    $invoice->setValues('DatiPagamento', $DatiPagamento);
+
     $xml = $invoice->asXML();
-    header("Content-type: text/xml; charset=utf-8");
     echo $xml . PHP_EOL;
 }
 catch (\Exception $e)
