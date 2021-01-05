@@ -11,6 +11,7 @@ return array(
     'Taocomp\\Einvoicing\\' => array($baseDir . '/src'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'SlamFatturaElettronica\\' => array($vendorDir . '/slam/php-validatore-fattura-elettronica/lib'),
+    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src/Prophecy'),
     'Doctrine\\Instantiator\\' => array($vendorDir . '/doctrine/instantiator/src/Doctrine/Instantiator'),
     'DeepCopy\\' => array($vendorDir . '/myclabs/deep-copy/src/DeepCopy'),
 );

@@ -3,7 +3,7 @@
     "description": "A PHP package for managing italian e-invoice and notice XML formats",
     "require": {
         "php": "^7",
-        "slam/php-validatore-fattura-elettronica": ">=v1.2-patch20181010.4"
+        "slam/php-validatore-fattura-elettronica": ">=v1.2.1-patch20201009.1"
     },
     "autoload": {
         "psr-4": {"Taocomp\\Einvoicing\\": "src/"}

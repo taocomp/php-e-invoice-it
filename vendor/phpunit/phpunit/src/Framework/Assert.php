@@ -110,6 +110,8 @@ abstract class Assert
      *
      * @throws ExpectationFailedException
      * @throws \SebastianBergmann\RecursionContext\InvalidArgumentException
+     *
+     * @deprecated https://github.com/sebastianbergmann/phpunit/issues/3494
      */
     public static function assertArraySubset($subset, $array, bool $checkForObjectIdentity = false, string $message = ''): void
     {
@@ -1250,7 +1252,7 @@ abstract class Assert
      */
     public static function assertClassHasAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1269,7 +1271,7 @@ abstract class Assert
      */
     public static function assertClassNotHasAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1294,7 +1296,7 @@ abstract class Assert
      */
     public static function assertClassHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1317,7 +1319,7 @@ abstract class Assert
      */
     public static function assertClassNotHasStaticAttribute(string $attributeName, string $className, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1344,7 +1346,7 @@ abstract class Assert
      */
     public static function assertObjectHasAttribute(string $attributeName, $object, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidObjectAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -1369,7 +1371,7 @@ abstract class Assert
      */
     public static function assertObjectNotHasAttribute(string $attributeName, $object, string $message = ''): void
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidObjectAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(1, 'valid attribute name');
         }
 
@@ -2715,7 +2717,7 @@ abstract class Assert
      */
     public static function readAttribute($classOrObject, string $attributeName)
     {
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2761,7 +2763,7 @@ abstract class Assert
             throw InvalidArgumentHelper::factory(1, 'class name');
         }
 
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2801,7 +2803,7 @@ abstract class Assert
             throw InvalidArgumentHelper::factory(1, 'object');
         }
 
-        if (!self::isValidAttributeName($attributeName)) {
+        if (!self::isValidClassAttributeName($attributeName)) {
             throw InvalidArgumentHelper::factory(2, 'valid attribute name');
         }
 
@@ -2871,7 +2873,12 @@ abstract class Assert
         self::$count = 0;
     }
 
-    private static function isValidAttributeName(string $attributeName): bool
+    private static function isValidObjectAttributeName(string $attributeName): bool
+    {
+        return \preg_match('/[^\x00-\x1f\x7f-\x9f]+/', $attributeName);
+    }
+
+    private static function isValidClassAttributeName(string $attributeName): bool
     {
         return \preg_match('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $attributeName);
     }

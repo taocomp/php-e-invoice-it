@@ -50,7 +50,7 @@ try
     // Dati Pagamento
     $invoice->setValues('DatiPagamento', $DatiPagamento);
 
-    $xml = $invoice->asXML();
+    $xml = $invoice->validate()->asXML();
     echo $xml . PHP_EOL;
 }
 catch (\Exception $e)
