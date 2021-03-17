@@ -22,12 +22,10 @@ See [[https://forum.italia.it/c/fattura-pa][Forum Italia - Fatturazione Elettron
 - Apache configuration :: [[https://forum.italia.it/t/accreditamento-sdicoop-configurazione-ssl-su-apache/3314][Accreditamento SDICoop: configurazione SSL su Apache - Fatturazione Elettroni...]]
 - Interoperability tests :: [[https://forum.italia.it/t/test-interoperabilita-soluzioni/4370][Test Interoperabilità Soluzioni - Fatturazione Elettronica - Forum Italia]]
 
-If you need a "ready to start" solution, or a consultancy for your PHP project, please feel free to contact us at [[mailto:e-invoicing@taocomp.com][e-invoicing@taocomp.com]].
-
 * Quickstart
 ** Dependencies
 - ~php-xml~
-- tested for PHP 7+ +should work on PHP 5.5+ +too+ 
+- tested for PHP 7+ +should work on PHP 5.5+ +too+
 
 ** Installation
 *** Composer
@@ -40,21 +38,21 @@ If you need a "ready to start" solution, or a consultancy for your PHP project, 
 ** Invoice
 *** Create a new invoice
 Create a new FPA12 invoice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice = new FatturaElettronica('FPA12');
 #+END_SRC
 
 Create a new FPR12 invoice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice = new FatturaElettronica('FPR12');
 #+END_SRC
 
 Create a new invoice from file
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice = new FatturaElettronica('/path/to/invoice.xml');
 #+END_SRC
 *** Create a custom template invoice to be used later
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $prefixPath = __DIR__ . '/tmpfiles';
 $filename = 'my-custom-template.xml';
 $invoice = new FatturaElettronica('FPR12');
@@ -65,14 +63,14 @@ $invoice->setPrefixPath($prefixPath)->save();
 #+END_SRC
 *** Invoice lot and line items
 Set 3 bodies:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->addBody(2);
 // or
 $invoice->setBodyCount(3);
 #+END_SRC
 
 Set 4 line items for second body:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->addLineItem(3, 2);
 // or
 $invoice->setLineItemCount(4, 2);
@@ -87,41 +85,41 @@ Please note that:
 - xpath predicates are allowed: ~$invoice->getValue('DettaglioLinee[2]/NumeroLinea');~
 
 Get a value:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->getValue('ModalitaPagamento');
 #+END_SRC
 
 Get a value with a /context/:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->getValue('NumItem', 'DatiContratto');
 #+END_SRC
 
 Invalid queries (they return more than one element):
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->getValue('IdPaese');
 $invoice->getValue('Sede/Indirizzo', 'FatturaElettronicaHeader');
 #+END_SRC
 
 Set a value for a specific element:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setValue('ProgressivoInvio', 10001);
 #+END_SRC
 
 Set many single values at once:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setValues('IdTrasmittente', array(
     'IdCodice' => '09876543210',
     'IdPaese' => 'IT'
 ));
 #+END_SRC
 
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setValues('CedentePrestatore/Sede', array(
     'Indirizzo' => 'VIA UNIVERSO 1'
 ));
 #+END_SRC
 
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setValues('CessionarioCommittente', array(
     // CessionarioCommittente/DatiAnagrafici/CodiceFiscale
     'DatiAnagrafici/CodiceFiscale' => '01234567890',
@@ -130,7 +128,7 @@ $invoice->setValues('CessionarioCommittente', array(
 ));
 #+END_SRC
 
-#+BEGIN_SRC 
+#+BEGIN_SRC
 // Set values for second body
 $body2 = $invoice->getBody(2);
 $invoice->setValue('Numero', 44, $body2);
@@ -138,7 +136,7 @@ $invoice->setValue('Data', '2018-12-12', $body2);
 #+END_SRC
 
 Set values to multiple elements at once:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setValuesToAll('DatiGenerali', array(
     // All "RiferimentoNumeroLinea" somewhere inside DatiGenerali
     'RiferimentoNumeroLinea' => 1,
@@ -150,7 +148,7 @@ $invoice->setValuesToAll('DatiGenerali', array(
 #+END_SRC
 
 Set values from an assoc array:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $array =  array(
     'DatiAnagraficiVettore' => array(
         'IdFiscaleIVA' => array(
@@ -175,49 +173,49 @@ All but ~setValueToAll~ and ~setValuesToAll~ methods will throw an exception if 
 
 *** Set/Unset stylesheet
 Set:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setStylesheet('/path/to/xsl');
 #+END_SRC
 
 Unset:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->unsetStylesheet();
 #+END_SRC
 
 *** Validate invoice
 You need [[https://github.com/Slamdunk/php-validatore-fattura-elettronica][Slamdunk/php-validatore-fattura-elettronica]]. If you install ~php-e-invoice-it~ via-composer, you got it as dependency; otherwise you must download and require it manually.
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->validate();
 #+END_SRC
 An exception is thrown (with a message) if the XML is not valid, for example:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 DOMDocument::schemaValidateSource(): Element 'DatiTrasmissione': Missing child element(s). Expected is ( CodiceDestinatario ).
 #+END_SRC
 
 *** Save invoice
 Set an optional default destination dir for all invoices:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 FatturaElettronica::setDefaultPrefixPath('path/to/dir');
 #+END_SRC
 
 Set an optional destination dir for current invoice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setPrefixPath('path/to/another/dir');
 #+END_SRC
 
 Save invoice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->save();
 #+END_SRC
 
 Specify a custom filename:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $invoice->setFilename('my-invoice.xml')->save();
 #+END_SRC
 
 *** Send invoice to SdI
 Setup a ~\Taocomp\Einvoicing\SdicoopClient\Client~ object (for connecting to webservice SdIRiceviFile):
-#+BEGIN_SRC 
+#+BEGIN_SRC
 use \Taocomp\Einvoicing\SdicoopClient\Client;
 use \Taocomp\Einvoicing\SdicoopClient\FileSdIBase;
 use \Taocomp\Einvoicing\SdicoopClient\RispostaSdIRiceviFile;
@@ -233,22 +231,22 @@ $client = new Client(array(
 #+END_SRC
 
 Send invoice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $fileSdI = new FileSdIBase();
 $fileSdI->load($invoice);
-$response = new RispostaSdIRiceviFile($client->RiceviFile($fileSdI));    
+$response = new RispostaSdIRiceviFile($client->RiceviFile($fileSdI));
 #+END_SRC
 
 ** Notices
 *** Create a new notice
 NotificaEsitoCommittente:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $notice = new EsitoCommittente();
 #+END_SRC
 
 *** Load a notice from file
 *** Set values
-#+BEGIN_SRC 
+#+BEGIN_SRC
 // Set some values from invoice, second body:
 $notice->setValuesFromInvoice($invoice, 2);
 
@@ -258,17 +256,17 @@ $notice->setValue('Esito', EsitoCommittente::EC01);
 #+END_SRC
 *** Set/Unset stylesheet
 Set:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $notice->setStylesheet('/path/to/xsl');
 #+END_SRC
 
 Unset:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $notice->unsetStylesheet();
 #+END_SRC
 
 *** Save notice
-#+BEGIN_SRC 
+#+BEGIN_SRC
 // Set filename from invoice
 $notice->setFilenameFromInvoice($invoice, '_EC_001');
 
@@ -278,7 +276,7 @@ $notice->save();
 
 *** Send notice to SdI
 Setup a ~\Taocomp\Einvoicing\SdicoopClient\Client~ object (for connecting to webservice SdIRiceviNotifica):
-#+BEGIN_SRC 
+#+BEGIN_SRC
 use \Taocomp\Einvoicing\SdicoopClient\Client;
 use \Taocomp\Einvoicing\SdicoopClient\FileSdI;
 use \Taocomp\Einvoicing\SdicoopClient\RispostaSdINotificaEsito;
@@ -294,7 +292,7 @@ $client = new Client(array(
 #+END_SRC
 
 Send notice:
-#+BEGIN_SRC 
+#+BEGIN_SRC
 $fileSdI = new FileSdI();
 $fileSdI->load($notice);
 $response = new RispostaSdINotificaEsito($client->NotificaEsito($fileSdI));
