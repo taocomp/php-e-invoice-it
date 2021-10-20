@@ -2,14 +2,14 @@
     "name": "taocomp/php-e-invoice-it",
     "description": "A PHP package for managing italian e-invoice and notice XML formats",
     "require": {
-        "php": "^7",
+        "php": "^7|^8.0",
         "slam/php-validatore-fattura-elettronica": ">=v1.2.1-patch20201009.1"
     },
     "autoload": {
         "psr-4": {"Taocomp\\Einvoicing\\": "src/"}
     },
     "require-dev": {
-        "phpunit/phpunit": "^7"
+        "phpunit/phpunit": "^7|^8.0"
     },
     "license": "GPL-3.0-or-later",
     "authors": [
