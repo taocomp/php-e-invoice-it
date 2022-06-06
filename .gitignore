@@ -3,3 +3,4 @@ tests/tmpfiles/*
 !tests/tmpfiles/.gitkeep
 vendor/
 .idea/
+composer.lock
